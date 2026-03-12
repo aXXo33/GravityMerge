@@ -1,0 +1,2 @@
+using UnityEngine;
+public class IAPManager : MonoBehaviour{public static IAPManager Instance{get;private set;}private void Awake(){if(Instance==null)Instance=this;else{Destroy(gameObject);return;}}public void PurchaseRemoveAds(){AdManager.Instance?.RemoveAds();}public void RestorePurchases(){}}
