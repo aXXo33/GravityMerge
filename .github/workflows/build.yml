@@ -1,0 +1,31 @@
+name: Build GravityMerge
+
+on:
+  push:
+      branches: [main]
+        workflow_dispatch:
+
+        jobs:
+          build-android:
+              name: Build Android
+                  runs-on: ubuntu-latest
+                      steps:
+                            - uses: actions/checkout@v4
+                                    with:
+                                              lfs: true
+
+                                                    - uses: game-ci/unity-builder@v4
+                                                            env:
+                                                                      UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+                                                                                UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+                                                                                          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+                                                                                                  with:
+                                                                                                            targetPlatform: Android
+                                                                                                                      unityVersion: 2022.3.22f1
+                                                                                                                                androidAppBundle: false
+                                                                                                                                
+                                                                                                                                      - uses: actions/upload-artifact@v4
+                                                                                                                                              with:
+                                                                                                                                                        name: GravityMerge-Android
+                                                                                                                                                                  path: build/Android
+                                                                                                                                                                            retention-days: 14
