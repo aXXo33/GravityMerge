@@ -1,0 +1,2 @@
+using UnityEngine;
+public class PhysicsConfig : MonoBehaviour{[SerializeField]private float gravity=-12;[SerializeField]private int velIter=8,posIter=8;private void Awake(){Physics2D.gravity=new Vector2(0,gravity);Physics2D.velocityIterations=velIter;Physics2D.positionIterations=posIter;}}
