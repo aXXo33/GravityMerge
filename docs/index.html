@@ -266,7 +266,10 @@ function startLevel(){
     let oy=bB-25-Math.floor(Math.random()*3)*35;
     obstacles.push({x:ox,y:oy,type:L.oType,hp:L.oType==='ice'?2:3,w:cW*.8,h:26});
   }
-  updHUD();updStarBar();
+  updHUD();
+  // Clear star marks for fresh animation
+  for(let i=0;i<3;i++){let el=document.getElementById('sm'+i);if(el)el.dataset.done=''}
+  updStarBar();
   state='play';
 }
 
@@ -399,15 +402,16 @@ function dropBall(){
     if(state==='drop'){
       state='play';
       // Check if out of drops and board settled
-      if(lvDrops<=0)setTimeout(()=>checkEndOfDrops(),1500);
+      if(lvDrops<=0)setTimeout(()=>checkEndOfDrops(),800);
     }
   },280);
 }
 
 function checkEndOfDrops(){
+  if(state==='complete'||state==='fail')return;
   if(state!=='play'&&state!=='drop')return;
   // Wait for physics to settle
-  let moving=balls.some(b=>Math.abs(b.vy)>1||Math.abs(b.vx)>1);
+  let moving=balls.some(b=>Math.abs(b.vy)>0.5||Math.abs(b.vx)>0.5);
   if(moving){setTimeout(checkEndOfDrops,500);return}
   // Check if goal met
   if(lvType==='score'&&score>=lvTarget){state='complete';setTimeout(completeLevel,500)}
@@ -434,7 +438,7 @@ function updStarBar(){
   document.getElementById('star-fill').style.width=Math.min(100,pct)+'%';
   // Star marks
   let track=document.getElementById('star-track');
-  if(!track.querySelector('.star-mark')){
+  if(!track.querySelector('.star-mark')&&track){
     [33,66,100].forEach((p,i)=>{let m=document.createElement('span');m.className='star-mark';m.id='sm'+i;m.textContent='⭐';m.style.left=p+'%';track.appendChild(m)});
   }
   for(let i=0;i<3;i++){
@@ -555,6 +559,7 @@ function loop(){
   if(state==='play'||state==='drop'){
     physics();checkMerge();checkDanger();updSW();updCombo();updPts();updShake();updQuake();
     if(dropCD>0)dropCD--;if(state==='drop'&&dropCD<=0)state='play';
+    if(lvDrops<=0&&state==='play'&&fr%30===0){let mv=balls.some(b=>Math.abs(b.vy)>0.3||Math.abs(b.vx)>0.3);if(!mv)checkEndOfDrops();}
   }
   if(state!=='map'){
     X.save();X.translate(shX,shY);
