@@ -510,7 +510,7 @@ function drawBG(){
   // Stars
   X.fillStyle='rgba(255,255,255,.2)';
   for(let i=0;i<25;i++){let sx=((i*137+fr*.08)%W),sy=((i*251+fr*.04)%H);
-    X.beginPath();X.arc(sx,sy,.3+Math.sin(fr*.015+i)*.4,0,6.28);X.fill()}
+    let sr=Math.max(.2,.3+Math.sin(fr*.015+i)*.2);X.beginPath();X.arc(sx,sy,sr,0,6.28);X.fill()}
   // Walls
   let wc=danger>.7?'rgba(255,40,40,.4)':'rgba(35,35,90,.8)';
   X.fillStyle=wc;X.fillRect(0,bT,WALL,bB-bT);X.fillRect(W-WALL,bT,WALL,bB-bT);X.fillRect(0,bB,W,WALL);
@@ -538,18 +538,18 @@ function drawBall(b){
   let bs=1;if(Math.abs(b.vy)<.5&&Math.abs(b.vx)<.5){b.bp+=.03;bs=1+Math.sin(b.bp)*.012}
   X.scale(b.sq*bs,b.st*bs);
   // Trail
-  for(let t of b.tr){X.globalAlpha=t.l*.25;X.fillStyle=b.c;X.beginPath();X.arc(t.x-b.x,t.y-b.y,b.r*.5,0,6.28);X.fill()}
+  for(let t of b.tr){X.globalAlpha=t.l*.25;X.fillStyle=b.c;X.beginPath();X.arc(t.x-b.x,t.y-b.y,Math.max(.5,b.r*.5),0,6.28);X.fill()}
   X.globalAlpha=1;
   // Glow
   let gg=X.createRadialGradient(0,0,b.r*.3,0,0,b.r*1.8);
   gg.addColorStop(0,b.gl+'44');gg.addColorStop(1,'transparent');
-  X.fillStyle=gg;X.beginPath();X.arc(0,0,b.r*1.8,0,6.28);X.fill();
+  X.fillStyle=gg;X.beginPath();X.arc(0,0,Math.max(1,b.r*1.8),0,6.28);X.fill();
   // Body
   let mg=X.createRadialGradient(-b.r*.3,-b.r*.3,b.r*.1,0,0,b.r);
   mg.addColorStop(0,'#ffffff');mg.addColorStop(.3,b.c);mg.addColorStop(1,b.gl+'88');
-  X.fillStyle=mg;X.beginPath();X.arc(0,0,b.r,0,6.28);X.fill();
+  X.fillStyle=mg;X.beginPath();X.arc(0,0,Math.max(.5,b.r),0,6.28);X.fill();
   // Shine
-  X.fillStyle='rgba(255,255,255,.35)';X.beginPath();X.arc(-b.r*.25,-b.r*.25,b.r*.26,0,6.28);X.fill();
+  X.fillStyle='rgba(255,255,255,.35)';X.beginPath();X.arc(-b.r*.25,-b.r*.25,Math.max(.3,b.r*.26),0,6.28);X.fill();
   // Special
   if(b.spec==='bomb'){X.fillStyle='#fff';X.font='bold '+(b.r*.65)+'px Arial';X.textAlign='center';X.textBaseline='middle';X.fillText('💣',0,1)}
   // Tier name
@@ -568,8 +568,8 @@ function drawPreview(){
 }
 
 function drawSW(){for(let s of sws){let a=Math.floor(s.l*60).toString(16).padStart(2,'0');
-  X.strokeStyle=s.c+a;X.lineWidth=2;X.beginPath();X.arc(s.x,s.y,s.r,0,6.28);X.stroke()}X.lineWidth=1}
-function drawPts(){for(let p of pts){X.globalAlpha=p.l;X.fillStyle=p.c;X.beginPath();X.arc(p.x,p.y,p.r*p.l,0,6.28);X.fill()}X.globalAlpha=1}
+  X.strokeStyle=s.c+a;X.lineWidth=2;X.beginPath();X.arc(s.x,s.y,Math.max(1,s.r),0,6.28);X.stroke()}X.lineWidth=1}
+function drawPts(){for(let p of pts){X.globalAlpha=p.l;X.fillStyle=p.c;let pr2=Math.max(.1,p.r*p.l);X.beginPath();X.arc(p.x,p.y,pr2,0,6.28);X.fill()}X.globalAlpha=1}
 function drawFts(){for(let f of fts){X.globalAlpha=f.l;X.fillStyle=f.c;X.font='bold '+f.sz+'px Arial';X.textAlign='center';X.fillText(f.t,f.x,f.y)}X.globalAlpha=1}
 // === UPDATE ===
 function updPts(){for(let p of pts){p.x+=p.vx;p.y+=p.vy;p.vy+=.1;p.l-=p.d}pts=pts.filter(p=>p.l>0);
