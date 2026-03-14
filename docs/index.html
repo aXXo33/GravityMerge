@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+<title>Gravity Merge</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { 
+  width:100%; height:100%; overflow:hidden; 
+  background:#0a0a2e; 
+  font-family:'Segoe UI',Arial,sans-serif;
+  touch-action:none;
+  user-select:none;
+  -webkit-user-select:none;
+}
+canvas { display:block; margin:0 auto; }
+#ui-overlay {
+  position:absolute; top:0; left:0; width:100%; height:100%;
+  pointer-events:none; z-index:10;
+}
+#score-display {
+  position:absolute; top:10px; left:50%; transform:translateX(-50%);
+  color:#fff; font-size:24px; font-weight:bold;
+  text-shadow:0 0 10px rgba(255,200,50,0.8);
+  z-index:20;
+}
+#combo-display {
+  position:absolute; top:42px; left:50%; transform:translateX(-50%);
+  color:#ffaa00; font-size:18px; font-weight:bold;
+  text-shadow:0 0 8px rgba(255,170,0,0.6);
+  z-index:20; opacity:0; transition:opacity 0.3s;
+}
+#next-display {
+  position:absolute; top:8px; right:15px;
+  color:#aaa; font-size:13px; z-index:20;
+}
+#game-over-screen {
+  display:none; position:absolute; top:0; left:0; width:100%; height:100%;
+  background:rgba(0,0,0,0.85); z-index:100;
+  flex-direction:column; align-items:center; justify-content:center;
+}
+#game-over-screen.active { display:flex; }
+#game-over-screen h1 { color:#ff4444; font-size:36px; margin-bottom:10px; text-shadow:0 0 20px #ff0000; }
+#game-over-screen .final-score { color:#ffcc00; font-size:28px; margin-bottom:5px; }
+#game-over-screen .best-score { color:#aaa; font-size:16px; margin-bottom:25px; }
+#game-over-screen button {
+  padding:15px 40px; font-size:20px; border:none; border-radius:12px;
+  background:linear-gradient(135deg,#ff6b35,#ff2277); color:#fff;
+  cursor:pointer; pointer-events:auto; font-weight:bold;
+  box-shadow:0 4px 15px rgba(255,34,119,0.4);
+}
+#game-over-screen button:hover { transform:scale(1.05); }
+#start-screen {
+  position:absolute; top:0; left:0; width:100%; height:100%;
+  background:linear-gradient(180deg,#0a0a2e 0%,#1a0a3e 50%,#0a0a2e 100%);
+  z-index:200; display:flex; flex-direction:column; align-items:center; justify-content:center;
+}
+#start-screen h1 {
+  font-size:42px; color:#fff; margin-bottom:5px;
+  background:linear-gradient(135deg,#ff6b35,#ff2277,#aa44ff);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  text-shadow:none; animation:glow 2s infinite alternate;
+}
+@keyframes glow {
+  from { filter:brightness(1); }
+  to { filter:brightness(1.3); }
+}
+#start-screen .subtitle { color:#8888cc; font-size:16px; margin-bottom:30px; }
+#start-screen button {
+  padding:18px 50px; font-size:22px; border:none; border-radius:15px;
+  background:linear-gradient(135deg,#ff6b35,#ff2277); color:#fff;
+  cursor:pointer; font-weight:bold; animation:pulse 1.5s infinite;
+  box-shadow:0 4px 20px rgba(255,34,119,0.5);
+}
+@keyframes pulse {
+  0%,100% { transform:scale(1); }
+  50% { transform:scale(1.05); }
+}
+#start-screen .hint { color:#666; font-size:12px; margin-top:20px; }
+#danger-bar {
+  position:absolute; left:0; top:0; width:4px; height:100%;
+  z-index:15; opacity:0; transition:opacity 0.3s;
+}
+#danger-bar-right {
+  position:absolute; right:0; top:0; width:4px; height:100%;
+  z-index:15; opacity:0; transition:opacity 0.3s;
+}
+</style>
+</head>
+<body>
+<div id="start-screen">
+  <h1>GRAVITY MERGE</h1>
+  <div class="subtitle">Fizik Tabanlı Birleştirme Bulmacası</div>
+  <button onclick="startGame()">OYNA</button>
+  <div class="hint">Aynı renkteki topları birleştir!</div>
+</div>
+<canvas id="gameCanvas"></canvas>
+<div id="score-display">0</div>
+<div id="combo-display">COMBO x2!</div>
+<div id="next-display">Sonraki: ●</div>
+<div id="danger-bar"></div>
+<div id="danger-bar-right"></div>
+<div id="game-over-screen">
+  <h1>OYUN BİTTİ!</h1>
+  <div class="final-score" id="final-score">0</div>
+  <div class="best-score" id="best-score">En İyi: 0</div>
+  <button onclick="restartGame()">TEKRAR OYNA</button>
+</div>
+<script>
+// ============ GRAVITY MERGE - HTML5 DEMO ============
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+// Tier data
+const TIERS = [
+  { name:'Spark',    color:'#88ccff', glow:'#aaddff', radius:12, score:1 },
+  { name:'Ember',    color:'#ff8844', glow:'#ffaa66', radius:15, score:3 },
+  { name:'Flame',    color:'#ff4422', glow:'#ff6644', radius:18, score:9 },
+  { name:'Comet',    color:'#44ddff', glow:'#66eeff', radius:21, score:27 },
+  { name:'Nova',     color:'#ffdd44', glow:'#ffee66', radius:25, score:81 },
+  { name:'Star',     color:'#ff44aa', glow:'#ff66cc', radius:29, score:243 },
+  { name:'Nebula',   color:'#aa44ff', glow:'#cc66ff', radius:33, score:729 },
+  { name:'Pulsar',   color:'#44ff88', glow:'#66ffaa', radius:37, score:2187 },
+  { name:'Quasar',   color:'#ff8800', glow:'#ffaa33', radius:42, score:6561 },
+  { name:'Supernova',color:'#ff2266', glow:'#ff4488', radius:47, score:19683 },
+  { name:'Galaxy',   color:'#8844ff', glow:'#aa66ff', radius:53, score:59049 },
+  { name:'Universe', color:'#ffffff', glow:'#ffffaa', radius:60, score:177147 }
+];
+
+// Game state
+let W, H, COLS=6, WALL_T=6;
+let cellW, boardL, boardR, boardB, boardT;
+let balls=[], particles=[], floatingTexts=[];
+let score=0, bestScore=0, combo=0, comboTimer=0;
+let COMBO_WINDOW=1500;
+let COMBO_MULTS=[1,1,2,2,2,5,5,5,10,10,25];
+let gameState='menu'; // menu, playing, dropping, gameover
+let currentTier=0, nextTier=0;
+let dropX=0, gravity=0.35, friction=0.98, bounce=0.4;
+let dangerLevel=0;
+let dropCooldown=0;
+let frameCount=0;
+let highestTier=0;
+
+// Resize
+function resize(){
+  let aspect=9/16;
+  if(window.innerWidth/window.innerHeight < aspect){
+    W=window.innerWidth; H=W/aspect;
+  } else {
+    H=window.innerHeight; W=H*aspect;
+  }
+  W=Math.floor(W); H=Math.floor(H);
+  canvas.width=W; canvas.height=H;
+  canvas.style.width=W+'px'; canvas.style.height=H+'px';
+  cellW=(W-WALL_T*2)/COLS;
+  boardL=WALL_T; boardR=W-WALL_T;
+  boardT=80; boardB=H-WALL_T;
+  dropX=W/2;
+}
+
+// Ball physics object
+function createBall(x,y,tier){
+  let t=TIERS[tier];
+  return {
+    x:x, y:y, vx:0, vy:0,
+    tier:tier, radius:t.radius*(W/360),
+    color:t.color, glow:t.glow,
+    merging:false, mergeTimer:0,
+    settled:false, settleCount:0,
+    id:Math.random()
+  };
+}
+
+// Particles
+function spawnParticles(x,y,color,count){
+  for(let i=0;i<count;i++){
+    let angle=Math.random()*Math.PI*2;
+    let speed=1+Math.random()*4;
+    particles.push({
+      x:x, y:y,
+      vx:Math.cos(angle)*speed, vy:Math.sin(angle)*speed-2,
+      life:1, decay:0.015+Math.random()*0.02,
+      radius:2+Math.random()*3,
+      color:color
+    });
+  }
+}
+
+function spawnFloatingText(x,y,text,color){
+  floatingTexts.push({
+    x:x, y:y, text:text, color:color,
+    life:1, vy:-1.5
+  });
+}
+
+// Check merges
+function checkMerges(){
+  let merged=false;
+  for(let i=0;i<balls.length;i++){
+    if(balls[i].merging) continue;
+    for(let j=i+1;j<balls.length;j++){
+      if(balls[j].merging) continue;
+      if(balls[i].tier!==balls[j].tier) continue;
+      let dx=balls[i].x-balls[j].x;
+      let dy=balls[i].y-balls[j].y;
+      let dist=Math.sqrt(dx*dx+dy*dy);
+      let minD=balls[i].radius+balls[j].radius;
+      if(dist<minD*1.05){
+        // MERGE!
+        merged=true;
+        let a=balls[i], b=balls[j];
+        let mx=(a.x+b.x)/2, my=(a.y+b.y)/2;
+        let newTier=a.tier+1;
+        
+        // Remove both
+        a.merging=true; b.merging=true;
+        
+        // Particles
+        spawnParticles(mx,my,a.color,15);
+        
+        if(newTier<TIERS.length){
+          // Create merged ball
+          let nb=createBall(mx,my,newTier);
+          nb.vy=-2;
+          balls.push(nb);
+          
+          // Score
+          combo++;
+          comboTimer=COMBO_WINDOW;
+          let mult=COMBO_MULTS[Math.min(combo,COMBO_MULTS.length-1)];
+          let pts=TIERS[newTier].score*mult;
+          score+=pts;
+          
+          if(newTier>highestTier) highestTier=newTier;
+          
+          spawnFloatingText(mx,my-20,'+'+pts,TIERS[newTier].color);
+          if(combo>=3){
+            let cd=document.getElementById('combo-display');
+            cd.textContent='COMBO x'+mult+'!';
+            cd.style.opacity='1';
+          }
+          
+          // Universe merge = board clear!
+          if(newTier===11){
+            // Epic explosion
+            for(let k=0;k<balls.length;k++){
+              if(!balls[k].merging){
+                spawnParticles(balls[k].x,balls[k].y,'#ffffff',10);
+                balls[k].merging=true;
+              }
+            }
+            score+=50000;
+            spawnFloatingText(W/2,H/2,'★ UNIVERSE! +50000 ★','#ffffff');
+            spawnParticles(mx,my,'#ffff00',50);
+            spawnParticles(mx,my,'#ff00ff',50);
+            spawnParticles(mx,my,'#00ffff',50);
+          }
+        } else {
+          // Max tier reached
+          let pts=177147;
+          score+=pts;
+          spawnFloatingText(mx,my-20,'+'+pts,'#ffffff');
+          spawnParticles(mx,my,'#ffffff',40);
+        }
+        
+        document.getElementById('score-display').textContent=score.toLocaleString();
+        break;
+      }
+    }
+  }
+  // Remove merged balls
+  balls=balls.filter(b=>!b.merging);
+  return merged;
+}
+
+// Physics step
+function physics(){
+  let sc=W/360;
+  for(let b of balls){
+    // Gravity
+    b.vy+=gravity;
+    
+    // Apply velocity
+    b.x+=b.vx;
+    b.y+=b.vy;
+    
+    // Friction
+    b.vx*=friction;
+    
+    // Wall collisions
+    if(b.x-b.radius<boardL){
+      b.x=boardL+b.radius;
+      b.vx=Math.abs(b.vx)*bounce;
+    }
+    if(b.x+b.radius>boardR){
+      b.x=boardR-b.radius;
+      b.vx=-Math.abs(b.vx)*bounce;
+    }
+    if(b.y+b.radius>boardB){
+      b.y=boardB-b.radius;
+      b.vy=-Math.abs(b.vy)*bounce;
+      if(Math.abs(b.vy)<0.5) b.vy=0;
+    }
+    
+    // Ball-ball collisions
+    for(let o of balls){
+      if(o===b) continue;
+      let dx=b.x-o.x;
+      let dy=b.y-o.y;
+      let dist=Math.sqrt(dx*dx+dy*dy);
+      let minD=b.radius+o.radius;
+      if(dist<minD && dist>0.01){
+        let nx=dx/dist, ny=dy/dist;
+        let overlap=(minD-dist)/2;
+        b.x+=nx*overlap;
+        b.y+=ny*overlap;
+        o.x-=nx*overlap;
+        o.y-=ny*overlap;
+        
+        // Velocity exchange
+        let dvx=b.vx-o.vx, dvy=b.vy-o.vy;
+        let dvn=dvx*nx+dvy*ny;
+        if(dvn>0){
+          b.vx-=dvn*nx*0.5;
+          b.vy-=dvn*ny*0.5;
+          o.vx+=dvn*nx*0.5;
+          o.vy+=dvn*ny*0.5;
+        }
+      }
+    }
+  }
+}
+
+// Check danger
+function checkDanger(){
+  let dangerY=boardT+(boardB-boardT)*0.15;
+  let maxDanger=0;
+  for(let b of balls){
+    if(b.y-b.radius<dangerY){
+      let d=1-(b.y-b.radius-boardT)/(dangerY-boardT);
+      if(d>maxDanger) maxDanger=d;
+    }
+  }
+  dangerLevel=maxDanger;
+  
+  let dl=document.getElementById('danger-bar');
+  let dr=document.getElementById('danger-bar-right');
+  if(dangerLevel>0.3){
+    dl.style.opacity='1'; dr.style.opacity='1';
+    let c=dangerLevel>0.7?'#ff0000':'#ff6600';
+    dl.style.background=c; dr.style.background=c;
+  } else {
+    dl.style.opacity='0'; dr.style.opacity='0';
+  }
+  
+  // Game over check - ball above board for sustained time
+  for(let b of balls){
+    if(b.y-b.radius<=boardT+5 && Math.abs(b.vy)<1){
+      b.settleCount=(b.settleCount||0)+1;
+      if(b.settleCount>120){ // 2 seconds at 60fps
+        gameOver();
+        return;
+      }
+    } else {
+      b.settleCount=0;
+    }
+  }
+}
+
+function gameOver(){
+  gameState='gameover';
+  if(score>bestScore){
+    bestScore=score;
+    localStorage.setItem('gm_best',bestScore);
+  }
+  document.getElementById('final-score').textContent=score.toLocaleString()+' puan';
+  document.getElementById('best-score').textContent='En İyi: '+bestScore.toLocaleString();
+  document.getElementById('game-over-screen').classList.add('active');
+}
+
+// Drawing
+function drawBackground(){
+  // Dark space gradient
+  let grd=ctx.createLinearGradient(0,0,0,H);
+  grd.addColorStop(0,'#0a0a2e');
+  grd.addColorStop(0.5,'#12083a');
+  grd.addColorStop(1,'#0a0a2e');
+  ctx.fillStyle=grd;
+  ctx.fillRect(0,0,W,H);
+  
+  // Stars
+  if(frameCount%2===0){
+    ctx.fillStyle='rgba(255,255,255,0.3)';
+    for(let i=0;i<20;i++){
+      let sx=((i*137+frameCount*0.1)%W);
+      let sy=((i*251+frameCount*0.05)%H);
+      ctx.beginPath();
+      ctx.arc(sx,sy,0.5+Math.sin(frameCount*0.02+i)*0.5,0,Math.PI*2);
+      ctx.fill();
+    }
+  }
+  
+  // Walls
+  ctx.fillStyle='#222255';
+  ctx.fillRect(0,boardT,WALL_T,boardB-boardT);
+  ctx.fillRect(W-WALL_T,boardT,WALL_T,boardB-boardT);
+  ctx.fillRect(0,boardB,W,WALL_T);
+  
+  // Grid lines (subtle)
+  ctx.strokeStyle='rgba(255,255,255,0.03)';
+  ctx.lineWidth=1;
+  for(let i=1;i<COLS;i++){
+    let x=boardL+i*cellW;
+    ctx.beginPath(); ctx.moveTo(x,boardT); ctx.lineTo(x,boardB); ctx.stroke();
+  }
+  
+  // Danger line
+  let dangerY=boardT+(boardB-boardT)*0.15;
+  ctx.strokeStyle='rgba(255,0,0,'+(0.1+Math.sin(frameCount*0.05)*0.05)+')';
+  ctx.setLineDash([5,5]);
+  ctx.beginPath(); ctx.moveTo(boardL,dangerY); ctx.lineTo(boardR,dangerY); ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+function drawBall(b){
+  ctx.save();
+  
+  // Glow
+  let grd=ctx.createRadialGradient(b.x,b.y,b.radius*0.3,b.x,b.y,b.radius*1.8);
+  grd.addColorStop(0,b.glow+'66');
+  grd.addColorStop(1,'transparent');
+  ctx.fillStyle=grd;
+  ctx.beginPath();
+  ctx.arc(b.x,b.y,b.radius*1.8,0,Math.PI*2);
+  ctx.fill();
+  
+  // Main ball
+  let bg=ctx.createRadialGradient(b.x-b.radius*0.3,b.y-b.radius*0.3,b.radius*0.1,b.x,b.y,b.radius);
+  bg.addColorStop(0,'#ffffff');
+  bg.addColorStop(0.3,b.color);
+  bg.addColorStop(1,b.glow+'88');
+  ctx.fillStyle=bg;
+  ctx.beginPath();
+  ctx.arc(b.x,b.y,b.radius,0,Math.PI*2);
+  ctx.fill();
+  
+  // Shine
+  ctx.fillStyle='rgba(255,255,255,0.4)';
+  ctx.beginPath();
+  ctx.arc(b.x-b.radius*0.25,b.y-b.radius*0.25,b.radius*0.3,0,Math.PI*2);
+  ctx.fill();
+  
+  // Tier name for bigger balls
+  if(b.tier>=4){
+    ctx.fillStyle='rgba(0,0,0,0.6)';
+    ctx.font='bold '+(b.radius*0.55)+'px Arial';
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    ctx.fillText(TIERS[b.tier].name.substring(0,3),b.x,b.y);
+  }
+  
+  ctx.restore();
+}
+
+function drawDropPreview(){
+  if(gameState!=='playing') return;
+  let t=TIERS[currentTier];
+  let r=t.radius*(W/360);
+  
+  // Drop line
+  ctx.strokeStyle='rgba(255,255,255,0.15)';
+  ctx.setLineDash([4,4]);
+  ctx.beginPath();
+  ctx.moveTo(dropX,boardT+r);
+  ctx.lineTo(dropX,boardB);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  
+  // Preview ball
+  ctx.globalAlpha=0.6;
+  let b={x:dropX,y:boardT+r+5,radius:r,tier:currentTier,color:t.color,glow:t.glow};
+  drawBall(b);
+  ctx.globalAlpha=1;
+}
+
+function drawParticles(){
+  for(let p of particles){
+    ctx.globalAlpha=p.life;
+    ctx.fillStyle=p.color;
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.radius*p.life,0,Math.PI*2);
+    ctx.fill();
+  }
+  ctx.globalAlpha=1;
+}
+
+function drawFloatingTexts(){
+  for(let f of floatingTexts){
+    ctx.globalAlpha=f.life;
+    ctx.fillStyle=f.color;
+    ctx.font='bold 16px Arial';
+    ctx.textAlign='center';
+    ctx.fillText(f.text,f.x,f.y);
+  }
+  ctx.globalAlpha=1;
+}
+
+function updateParticles(){
+  for(let p of particles){
+    p.x+=p.vx; p.y+=p.vy;
+    p.vy+=0.1;
+    p.life-=p.decay;
+  }
+  particles=particles.filter(p=>p.life>0);
+  
+  for(let f of floatingTexts){
+    f.y+=f.vy;
+    f.life-=0.015;
+  }
+  floatingTexts=floatingTexts.filter(f=>f.life>0);
+}
+
+// Combo timer
+function updateCombo(){
+  if(comboTimer>0){
+    comboTimer-=16.67;
+    if(comboTimer<=0){
+      combo=0;
+      document.getElementById('combo-display').style.opacity='0';
+    }
+  }
+}
+
+// Next tier display
+function updateNextDisplay(){
+  let t=TIERS[nextTier];
+  let nd=document.getElementById('next-display');
+  nd.innerHTML='Sonraki: <span style="color:'+t.color+'">●</span> '+t.name;
+}
+
+// Drop ball
+function dropBall(){
+  if(gameState!=='playing') return;
+  if(dropCooldown>0) return;
+  
+  let t=TIERS[currentTier];
+  let r=t.radius*(W/360);
+  let b=createBall(dropX,boardT+r+5,currentTier);
+  b.vy=1;
+  b.vx=(Math.random()-0.5)*0.5;
+  balls.push(b);
+  
+  currentTier=nextTier;
+  // Next tier: weighted random (lower tiers more common)
+  let maxSpawn=Math.min(4,Math.max(1,Math.floor(highestTier*0.6)));
+  nextTier=Math.floor(Math.random()*(maxSpawn+1));
+  updateNextDisplay();
+  
+  dropCooldown=20; // frames
+  gameState='dropping';
+  setTimeout(()=>{ if(gameState==='dropping') gameState='playing'; },350);
+}
+
+// Input handling
+let pointerDown=false;
+canvas.addEventListener('pointerdown',(e)=>{
+  e.preventDefault();
+  if(gameState==='playing'||gameState==='dropping'){
+    pointerDown=true;
+    let rect=canvas.getBoundingClientRect();
+    let sx=canvas.width/rect.width;
+    dropX=Math.max(boardL+20,Math.min(boardR-20,(e.clientX-rect.left)*sx));
+  }
+});
+canvas.addEventListener('pointermove',(e)=>{
+  e.preventDefault();
+  if(pointerDown && (gameState==='playing'||gameState==='dropping')){
+    let rect=canvas.getBoundingClientRect();
+    let sx=canvas.width/rect.width;
+    dropX=Math.max(boardL+20,Math.min(boardR-20,(e.clientX-rect.left)*sx));
+  }
+});
+canvas.addEventListener('pointerup',(e)=>{
+  e.preventDefault();
+  if(pointerDown){
+    pointerDown=false;
+    dropBall();
+  }
+});
+
+// Game loop
+function gameLoop(){
+  frameCount++;
+  
+  if(gameState==='playing'||gameState==='dropping'){
+    physics();
+    checkMerges();
+    checkDanger();
+    updateCombo();
+    updateParticles();
+    if(dropCooldown>0) dropCooldown--;
+    if(gameState==='dropping' && dropCooldown<=0) gameState='playing';
+  }
+  
+  // Draw
+  drawBackground();
+  for(let b of balls) drawBall(b);
+  drawDropPreview();
+  drawParticles();
+  drawFloatingTexts();
+  
+  requestAnimationFrame(gameLoop);
+}
+
+// Start / Restart
+function startGame(){
+  document.getElementById('start-screen').style.display='none';
+  bestScore=parseInt(localStorage.getItem('gm_best')||'0');
+  resetGame();
+}
+
+function resetGame(){
+  balls=[]; particles=[]; floatingTexts=[];
+  score=0; combo=0; comboTimer=0; highestTier=0;
+  dropCooldown=0;
+  document.getElementById('score-display').textContent='0';
+  document.getElementById('combo-display').style.opacity='0';
+  document.getElementById('game-over-screen').classList.remove('active');
+  currentTier=0;
+  nextTier=Math.floor(Math.random()*2);
+  updateNextDisplay();
+  gameState='playing';
+}
+
+function restartGame(){
+  resetGame();
+}
+
+// Init
+window.addEventListener('resize',resize);
+resize();
+gameLoop();
+</script>
+</body>
+</html>
