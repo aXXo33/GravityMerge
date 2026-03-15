@@ -450,7 +450,7 @@ var TUTORIAL_STEPS=[
 {icon:TARGET,title:'Welcome!',text:'Shoot the ball to destroy all targets. Aim by dragging!'},
 {icon:BOOM,title:'Chain Reactions',text:'Hit explosive targets to create chain reactions!'},
 {icon:STAR,title:'Stars & Coins',text:'Save shots for more stars. Earn coins for the shop!'},
-{icon:GOLD,title:'Boss Rooms',text:'Every 5th level is a Boss Room. 1 shot only!'},
+{icon:GOLD,title:'Boss Rooms',text:'Every 5th level is a Boss Room. 2 shots only!'},
 {icon:ROCKET,title:'Ready?',text:'Tap to aim, release to shoot!'}
 ];
 var tutorialStep=-1;
@@ -531,7 +531,7 @@ var HANDCRAFTED={
     {x:0.5,y:0.35,type:'crystal'},{x:0.2,y:0.4,type:'normal'},{x:0.8,y:0.4,type:'normal'}
   ],walls:[{x:0.45,y:0.18,w:0.1,h:0.01}]},
   // Room 0, Level 4: BOSS - big skull in center
-  '0_4':{shots:1,targets:[{x:0.5,y:0.3,type:'boss'}],walls:[]},
+  '0_4':{shots:2,targets:[{x:0.5,y:0.3,type:'boss'}],walls:[]},
   // Room 1 (Gravity Lab), Level 0: Moving targets intro
   '1_0':{shots:5,targets:[
     {x:0.3,y:0.2,type:'moving'},{x:0.5,y:0.3,type:'normal'},{x:0.7,y:0.2,type:'moving'}
@@ -571,7 +571,7 @@ function generateLevel(room,li,gl){
     });
   }else{
     // Procedural generation
-    if(isBossRoom){shotsLeft=totalShots=1;}else{totalShots=Math.max(2,5-Math.floor(li/2));shotsLeft=totalShots;}
+    if(isBossRoom){shotsLeft=totalShots=2;}else{totalShots=Math.max(2,5-Math.floor(li/2));shotsLeft=totalShots;}
     var numT=isBossRoom?1:Math.min(3+li+Math.floor(gl/3),15);
     var types=room.targetTypes;
     for(var i=0;i<numT;i++){
