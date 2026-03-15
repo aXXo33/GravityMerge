@@ -16,12 +16,9 @@ canvas{display:block}
 @keyframes popIn{0%{transform:scale(0);opacity:0}50%{transform:scale(1.2)}100%{transform:scale(1);opacity:1}}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
 @keyframes glow{0%,100%{box-shadow:0 0 10px rgba(255,107,53,0.5)}50%{box-shadow:0 0 30px rgba(255,107,53,0.8)}}
-@keyframes confettiFall{0%{transform:translateY(-10px) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
 @keyframes floatUp{0%{transform:translateY(0) scale(1);opacity:1}100%{transform:translateY(-80px) scale(1.5);opacity:0}}
-@keyframes spinGlow{0%{transform:rotate(0deg);filter:hue-rotate(0deg)}100%{transform:rotate(360deg);filter:hue-rotate(360deg)}}
-@keyframes trailFade{0%{opacity:0.8;transform:scale(1)}100%{opacity:0;transform:scale(0)}}
 .subtitle{color:#aaa;font-size:1em;margin-bottom:25px;letter-spacing:2px}
-.btn{padding:14px 40px;font-size:1.15em;font-weight:700;border:none;border-radius:12px;cursor:pointer;margin:6px;transition:all 0.2s;letter-spacing:1px;position:relative;overflow:hidden}
+.btn{padding:14px 40px;font-size:1.15em;font-weight:700;border:none;border-radius:12px;cursor:pointer;margin:6px;transition:all 0.2s;letter-spacing:1px}
 .btn-primary{background:linear-gradient(135deg,#ff6b35,#e8552a);color:#fff;box-shadow:0 4px 15px rgba(255,107,53,0.4)}
 .btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(255,107,53,0.6)}
 .btn-secondary{background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.2)}
@@ -74,16 +71,12 @@ canvas{display:block}
 .spin-wheel{width:220px;height:220px;border-radius:50%;position:relative;margin:15px auto;border:4px solid #f7c948;transition:transform 3s cubic-bezier(0.17,0.67,0.12,0.99)}
 .spin-segment{position:absolute;width:100%;height:100%;display:flex;align-items:flex-start;justify-content:center;padding-top:25px;font-size:0.8em;font-weight:700}
 .spin-pointer{width:0;height:0;border-left:15px solid transparent;border-right:15px solid transparent;border-top:25px solid #ff6b35;margin:0 auto;position:relative;z-index:5}
-.tutorial-box{background:rgba(0,0,0,0.85);border:2px solid #ff6b35;border-radius:16px;padding:20px;max-width:300px;text-align:center;color:#fff;position:fixed;z-index:300;animation:popIn 0.3s}
-.tutorial-box .tut-text{font-size:0.9em;margin:10px 0;line-height:1.5}
-.tutorial-box .tut-icon{font-size:2.5em;margin-bottom:5px}
 .leaderboard-list{max-width:320px;width:100%;padding:5px}
 .lb-row{display:flex;align-items:center;padding:10px 15px;margin:4px 0;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08)}
 .lb-row.me{border-color:#ff6b35;background:rgba(255,107,53,0.1)}
 .lb-rank{width:30px;font-weight:900;font-size:1.1em;color:#f7c948}
 .lb-name{flex:1;color:#fff;font-size:0.85em;font-weight:600}
 .lb-score{color:#aaa;font-size:0.85em;font-weight:700}
-.parallax-layer{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0}
 .achievement-popup{position:fixed;top:80px;right:20px;background:rgba(20,20,40,0.95);border:2px solid #f7c948;border-radius:12px;padding:12px 18px;z-index:250;animation:slideUp 0.5s;display:flex;align-items:center;gap:10px}
 .achievement-popup .ap-icon{font-size:1.5em}
 .achievement-popup .ap-text{color:#fff;font-size:0.8em}
@@ -96,1693 +89,585 @@ canvas{display:block}
 <body>
 <canvas id="confettiCanvas"></canvas>
 <canvas id="gameCanvas"></canvas>
-<!-- MENU -->
 <div id="menuS" class="overlay" style="display:flex">
-<div style="font-size:3.5em;margin-bottom:5px">ð¬</div>
+<div style="font-size:3.5em;margin-bottom:5px">&#x1F52C;</div>
 <div class="title">RICOCHET LAB</div>
 <div class="subtitle">CHAIN REACTOR</div>
-<div id="menuCoins" class="hud-coin" style="font-size:1.1em;margin-bottom:10px">ðª 0</div>
-<button class="btn btn-primary" onclick="startWorldMap()">â¶ PLAY</button>
-<button class="btn btn-gold" onclick="openDailyReward()">ð° DAILY SPIN</button>
+<div id="menuCoins" class="hud-coin" style="font-size:1.1em;margin-bottom:10px"></div>
+<button class="btn btn-primary" onclick="startWorldMap()">&#x25B6; PLAY</button>
+<button class="btn btn-gold" onclick="openDailyReward()">&#x1F3B0; DAILY SPIN</button>
 <div style="display:flex;gap:5px;margin-top:5px">
-<button class="btn btn-secondary btn-small" onclick="openShop()">ð SHOP</button>
-<button class="btn btn-secondary btn-small" onclick="openAchievements()">ð BADGES</button>
-<button class="btn btn-secondary btn-small" onclick="openLeaderboard()">ð RANK</button>
+<button class="btn btn-secondary btn-small" onclick="openShop()">&#x1F6D2; SHOP</button>
+<button class="btn btn-secondary btn-small" onclick="openAchievements()">&#x1F3C6; BADGES</button>
+<button class="btn btn-secondary btn-small" onclick="openLeaderboard()">&#x1F4CA; RANK</button>
 </div>
 <div id="streakInfo" style="color:#ff6b35;font-size:0.8em;margin-top:10px"></div>
 <div id="dailyInfo" style="color:#4CAF50;font-size:0.75em;margin-top:5px"></div>
 </div>
 
-<!-- TUTORIAL -->
 <div id="tutorialS" class="overlay">
-<div class="tutorial-box" style="position:relative">
-<div id="tutIcon" class="tut-icon">ð¯</div>
+<div style="background:rgba(0,0,0,0.85);border:2px solid #ff6b35;border-radius:16px;padding:20px;max-width:300px;text-align:center;color:#fff;animation:popIn 0.3s">
+<div id="tutIcon" style="font-size:2.5em;margin-bottom:5px"></div>
 <div id="tutTitle" style="font-size:1.1em;font-weight:700;color:#ff6b35"></div>
-<div id="tutText" class="tut-text"></div>
-<button class="btn btn-primary btn-small" onclick="nextTutorial()" id="tutBtn">NEXT â</button>
+<div id="tutText" style="font-size:0.9em;margin:10px 0;line-height:1.5"></div>
+<button class="btn btn-primary btn-small" onclick="nextTutorial()" id="tutBtn">NEXT</button>
 </div>
 </div>
 
-<!-- WORLD MAP -->
 <div id="worldMapS" class="overlay">
-<div style="font-size:1.5em;font-weight:800;color:#fff;margin-bottom:5px">ðºï¸ WORLD MAP</div>
-<div id="mapCoins" class="hud-coin" style="margin-bottom:10px">ðª 0</div>
+<div style="font-size:1.5em;font-weight:800;color:#fff;margin-bottom:5px">&#x1F5FA; WORLD MAP</div>
+<div id="mapCoins" class="hud-coin" style="margin-bottom:10px"></div>
 <div id="roomGrid" style="display:flex;flex-wrap:wrap;justify-content:center;max-width:480px"></div>
-<button class="btn btn-secondary btn-small" onclick="showMenu()" style="margin-top:15px">â BACK</button>
+<button class="btn btn-secondary btn-small" onclick="showMenu()" style="margin-top:15px">&#x2190; BACK</button>
 </div>
 
-<!-- ROOM INTRO -->
 <div id="roomIntroS" class="overlay">
 <div id="riIcon" style="font-size:3em"></div>
 <div id="riName" style="font-size:1.5em;font-weight:800;color:#fff;margin:5px 0"></div>
 <div id="riDesc" style="color:#aaa;font-size:0.85em;margin-bottom:10px"></div>
 <div id="riDots" class="level-dots"></div>
-<button class="btn btn-secondary btn-small" onclick="startWorldMap()" style="margin-top:10px">â MAP</button>
+<button class="btn btn-secondary btn-small" onclick="startWorldMap()" style="margin-top:10px">&#x2190; MAP</button>
 </div>
 
-<!-- HUD -->
 <div id="hud" class="hud" style="display:none">
-<div>
-<div class="hud-item">LVL <span id="hudLevel">1</span></div>
-<div class="hud-room" id="hudRoom">Glass Lab</div>
-</div>
-<div class="hud-item hud-coin" id="hudCoins">ðª 0</div>
-<div style="text-align:center">
-<div class="hud-item" id="hudTargets">âââ</div>
-</div>
-<div style="text-align:right">
-<div class="hud-item">SHOTS: <span id="hudShots">3</span></div>
-<div class="hud-item" style="font-size:0.75em;color:#f7c948" id="hudScore">0</div>
-</div>
+<div><div class="hud-item">LVL <span id="hudLevel">1</span></div><div class="hud-room" id="hudRoom">Glass Lab</div></div>
+<div class="hud-item hud-coin" id="hudCoins"></div>
+<div style="text-align:center"><div class="hud-item" id="hudTargets"></div></div>
+<div style="text-align:right"><div class="hud-item">SHOTS: <span id="hudShots">3</span></div><div class="hud-item" style="font-size:0.75em;color:#f7c948" id="hudScore">0</div></div>
 </div>
 
-<!-- LEVEL COMPLETE -->
 <div id="levelCompleteS" class="overlay">
-<div style="font-size:2.5em;margin-bottom:5px" id="lcEmoji">ð</div>
+<div style="font-size:2.5em;margin-bottom:5px" id="lcEmoji"></div>
 <div style="font-size:1.5em;font-weight:800;color:#4CAF50" id="lcTitle">LEVEL COMPLETE!</div>
-<div class="stars" id="lcStars">â­â­â­</div>
+<div class="stars" id="lcStars"></div>
 <div style="color:#f7c948;font-size:1.3em;font-weight:700" id="lcScore">+100</div>
-<div id="lcCoins" style="color:#f7c948;font-size:1em;margin:5px 0">ðª +10</div>
-<div id="lcPerfect" style="color:#ff6b35;font-size:1.2em;font-weight:800;display:none">ð¥ PERFECT SHOT!</div>
-<button class="btn btn-primary" onclick="nextLevel()">NEXT â</button>
-<button class="btn btn-secondary btn-small" onclick="showReplay()">ð¹ REPLAY</button>
-<button class="btn btn-secondary btn-small" onclick="shareScore()">ð¤ SHARE</button>
+<div id="lcCoins" style="color:#f7c948;font-size:1em;margin:5px 0"></div>
+<div id="lcPerfect" style="color:#ff6b35;font-size:1.2em;font-weight:800;display:none"></div>
+<button class="btn btn-primary" onclick="nextLevel()">NEXT &#x2192;</button>
+<button class="btn btn-secondary btn-small" onclick="shareScore()">&#x1F4E4; SHARE</button>
 </div>
 
-<!-- BOSS CLEAR -->
 <div id="bossClearS" class="overlay">
-<div style="font-size:3em">ð</div>
+<div style="font-size:3em">&#x1F3C6;</div>
 <div style="font-size:1.8em;font-weight:900;color:#f7c948;margin:10px 0">BOSS DEFEATED!</div>
 <div id="bcRoom" style="color:#aaa;font-size:0.9em"></div>
 <div id="bcUnlock" style="color:#4CAF50;font-size:1em;font-weight:700;margin:10px 0"></div>
-<div id="bcCoins" style="color:#f7c948;font-size:1.1em;margin:5px 0">ðª +50</div>
-<button class="btn btn-gold" onclick="nextLevel()">CONTINUE â</button>
+<div id="bcCoins" style="color:#f7c948;font-size:1.1em;margin:5px 0"></div>
+<button class="btn btn-gold" onclick="nextLevel()">CONTINUE &#x2192;</button>
 </div>
 
-<!-- GAME OVER -->
 <div id="gameOverS" class="overlay">
-<div id="goEmoji" style="font-size:2.5em">ð¤</div>
+<div id="goEmoji" style="font-size:2.5em"></div>
 <div id="goTitle" style="font-size:1.5em;font-weight:800;color:#ff1744;margin:5px 0">SO CLOSE!</div>
 <div id="goSubtitle" style="color:#aaa;font-size:0.9em;margin-bottom:10px"></div>
 <div id="goTargetLeft" style="color:#ff6b35;font-size:1.1em;font-weight:700;margin-bottom:10px"></div>
-<button class="btn btn-primary" onclick="retryLevel()" style="animation:shake 0.5s infinite">ð RETRY</button>
-<button class="btn btn-secondary btn-small" onclick="startWorldMap()">â MAP</button>
+<button class="btn btn-primary" onclick="retryLevel()" style="animation:shake 0.5s infinite">&#x1F504; RETRY</button>
+<button class="btn btn-secondary btn-small" onclick="startWorldMap()">&#x2190; MAP</button>
 </div>
 
-<!-- SHOP -->
 <div id="shopS" class="overlay">
-<div style="font-size:1.5em;font-weight:800;color:#fff;margin-bottom:3px">ð SHOP</div>
-<div id="shopCoins" class="hud-coin" style="margin-bottom:8px">ðª 0</div>
+<div style="font-size:1.5em;font-weight:800;color:#fff;margin-bottom:3px">&#x1F6D2; SHOP</div>
+<div id="shopCoins" class="hud-coin" style="margin-bottom:8px"></div>
 <div class="tab-bar" id="shopTabs">
-<button class="tab-btn active" onclick="shopTab('skins')">â½ BALLS</button>
-<button class="tab-btn" onclick="shopTab('trails')">â¨ TRAILS</button>
-<button class="tab-btn" onclick="shopTab('effects')">ð¥ EFFECTS</button>
+<button class="tab-btn active" onclick="shopTab('skins')">BALLS</button>
+<button class="tab-btn" onclick="shopTab('trails')">TRAILS</button>
+<button class="tab-btn" onclick="shopTab('effects')">EFFECTS</button>
 </div>
 <div id="shopGrid" class="shop-grid"></div>
-<button class="btn btn-secondary btn-small" onclick="closeShop()" style="margin-top:10px">â BACK</button>
+<button class="btn btn-secondary btn-small" onclick="closeShop()" style="margin-top:10px">&#x2190; BACK</button>
 </div>
 
-<!-- ACHIEVEMENTS -->
 <div id="achieveS" class="overlay">
-<div style="font-size:1.5em;font-weight:800;color:#fff;margin-bottom:8px">ð ACHIEVEMENTS</div>
+<div style="font-size:1.5em;font-weight:800;color:#fff;margin-bottom:8px">&#x1F3C6; ACHIEVEMENTS</div>
 <div id="achieveList" class="achievement-list"></div>
-<button class="btn btn-secondary btn-small" onclick="closeAchievements()" style="margin-top:10px">â BACK</button>
+<button class="btn btn-secondary btn-small" onclick="closeAchievements()" style="margin-top:10px">&#x2190; BACK</button>
 </div>
 
-<!-- LEADERBOARD -->
 <div id="leaderboardS" class="overlay">
-<div style="font-size:1.5em;font-weight:800;color:#fff;margin-bottom:8px">ð LEADERBOARD</div>
+<div style="font-size:1.5em;font-weight:800;color:#fff;margin-bottom:8px">&#x1F4CA; LEADERBOARD</div>
 <div id="lbList" class="leaderboard-list"></div>
-<button class="btn btn-secondary btn-small" onclick="closeLeaderboard()" style="margin-top:10px">â BACK</button>
+<button class="btn btn-secondary btn-small" onclick="closeLeaderboard()" style="margin-top:10px">&#x2190; BACK</button>
 </div>
 
-<!-- DAILY SPIN -->
 <div id="dailySpinS" class="overlay">
-<div style="font-size:1.5em;font-weight:800;color:#f7c948;margin-bottom:5px">ð° DAILY SPIN</div>
+<div style="font-size:1.5em;font-weight:800;color:#f7c948;margin-bottom:5px">&#x1F3B0; DAILY SPIN</div>
 <div id="spinStatus" style="color:#aaa;font-size:0.8em;margin-bottom:10px"></div>
 <div class="spin-pointer"></div>
 <div class="spin-wheel" id="spinWheel"></div>
 <div id="spinResult" style="color:#f7c948;font-size:1.2em;font-weight:700;margin:10px 0;display:none"></div>
-<button class="btn btn-gold" id="spinBtn" onclick="doSpin()">ð° SPIN!</button>
-<button class="btn btn-secondary btn-small" onclick="closeDailySpin()" style="margin-top:8px">â BACK</button>
+<button class="btn btn-gold" id="spinBtn" onclick="doSpin()">SPIN!</button>
+<button class="btn btn-secondary btn-small" onclick="closeDailySpin()" style="margin-top:8px">&#x2190; BACK</button>
 </div>
 
 <div class="fomo" id="fomo"></div>
 
 <script>
-// ===== v5.1 MEGA BUILD: 10/10 RICOCHET LAB =====
+// v5.2 RICOCHET LAB
+var COIN=String.fromCodePoint(0x1FA99),FIRE=String.fromCodePoint(0x1F525),STAR='\u2B50',STAR_E='\u2606',
+PARTY=String.fromCodePoint(0x1F389),BOOM=String.fromCodePoint(0x1F4A5),LOCK=String.fromCodePoint(0x1F512),
+UNLOCK=String.fromCodePoint(0x1F513),SPARKLE=String.fromCodePoint(0x1F31F),
+CRY=String.fromCodePoint(0x1F629),ANGRY=String.fromCodePoint(0x1F624),SAD=String.fromCodePoint(0x1F614),
+RAGE=String.fromCodePoint(0x1F4A2),CHECK='\u2705',TIMER='\u23F3',GLOBE=String.fromCodePoint(0x1F310),
+BOMB=String.fromCodePoint(0x1F4A3),GEM=String.fromCodePoint(0x1F48E),SHIELD=String.fromCodePoint(0x1F6E1),
+ARROW='\u27A1',GHOST=String.fromCodePoint(0x1F47B),CYCLONE=String.fromCodePoint(0x1F300),
+SKULL=String.fromCodePoint(0x1F480),GOLD=String.fromCodePoint(0x1F947),SILVER=String.fromCodePoint(0x1F948),
+BRONZE=String.fromCodePoint(0x1F949),TARGET=String.fromCodePoint(0x1F3AF),ROCKET=String.fromCodePoint(0x1F680),
+SCOPE=String.fromCodePoint(0x1F52C),SLOT=String.fromCodePoint(0x1F3B0);
 
-// Emoji constants (safe for JS strings)
-var E_COIN = String.fromCodePoint(0x1FA99);
-var E_FIRE = String.fromCodePoint(0x1F525);
-var E_STAR = String.fromCodePoint(0x2B50);
-var E_STAR_EMPTY = '\u2606';
-var E_PARTY = String.fromCodePoint(0x1F389);
-var E_BOOM = String.fromCodePoint(0x1F4A5);
-var E_LOCK = String.fromCodePoint(0x1F512);
-var E_UNLOCK = String.fromCodePoint(0x1F513);
-var E_SPARKLE = String.fromCodePoint(0x1F31F);
-var E_DOT = '\u25CF';
-var E_DOTOPEN = '\u25CB';
-var E_CRY = String.fromCodePoint(0x1F629);
-var E_ANGRY = String.fromCodePoint(0x1F624);
-var E_SAD = String.fromCodePoint(0x1F614);
-var E_RAGE = String.fromCodePoint(0x1F4A2);
-var E_CHECK = '\u2705';
-var E_TIMER = '\u23F3';
-var E_GLOBE = String.fromCodePoint(0x1F310);
-var E_BOMB = String.fromCodePoint(0x1F4A3);
-var E_GEM = String.fromCodePoint(0x1F48E);
-var E_SHIELD = String.fromCodePoint(0x1F6E1);
-var E_ARROW = '\u27A1';
-var E_GHOST = String.fromCodePoint(0x1F47B);
-var E_CYCLONE = String.fromCodePoint(0x1F300);
-var E_SKULL = String.fromCodePoint(0x1F480);
-var E_GOLD1 = String.fromCodePoint(0x1F947);
-var E_SILVER = String.fromCodePoint(0x1F948);
-var E_BRONZE = String.fromCodePoint(0x1F949);
-var E_TARGET = String.fromCodePoint(0x1F3AF);
-var E_ROCKET = String.fromCodePoint(0x1F680);
-var E_SCOPE = String.fromCodePoint(0x1F52C);
-var E_SLOT = String.fromCodePoint(0x1F3B0);
-
-const C = document.getElementById('gameCanvas');
-const ctx = C.getContext('2d');
-const CC = document.getElementById('confettiCanvas');
-const cctx = CC.getContext('2d');
-
-// ===== GLOBALS =====
-let W, H, balls = [], targets = [], walls = [], particles = [], shockwaves = [], textPops = [];
-let shooting = false, aiming = false, aimX, aimY, launchX, launchY;
-let score = 0, combo = 0, maxCombo = 0, shotsLeft = 3, totalShots = 3, targetsLeft = 0, level = 1;
-let currentRoom = 0, currentRoomLevel = 0, gameActive = false, isBossRoom = false;
-let screenShake = 0, slowMo = 1, slowMoTimer = 0;
-let confetti = [], trailParticles = [];
-let replayFrames = [], isRecording = false;
-let tutorialStep = -1, tutorialDone = false;
-let coins = 0, equippedSkin = 'default', equippedTrail = 'none', equippedEffect = 'default';
-
-// ===== SAVE SYSTEM =====
-const SAVE_KEY = 'rl2_save';
-let save = loadSave();
+var C=document.getElementById('gameCanvas'),ctx=C.getContext('2d'),
+CC=document.getElementById('confettiCanvas'),cctx=CC.getContext('2d');
+var W,H,balls=[],targets=[],walls=[],particles=[],shockwaves=[],textPops=[];
+var shooting=false,aiming=false,aimX,aimY,launchX,launchY;
+var score=0,combo=0,maxCombo=0,shotsLeft=3,totalShots=3,targetsLeft=0,level=1;
+var currentRoom=0,currentRoomLevel=0,gameActive=false,isBossRoom=false;
+var screenShake=0,slowMo=1,slowMoTimer=0;
+var confetti=[],trailParticles=[];
+var coins=0,equippedSkin='default',equippedTrail='none',equippedEffect='default';
+var SAVE_KEY='rl2_save';
+var save=loadSave();
 
 function loadSave(){
-  try{
-    const s = JSON.parse(localStorage.getItem(SAVE_KEY));
-    if(s){
-      // Migration: ensure all new fields exist
-      if(!s.ownedSkins) s.ownedSkins = ['default'];
-      if(!s.ownedTrails) s.ownedTrails = ['none'];
-      if(!s.ownedEffects) s.ownedEffects = ['default'];
-      if(!s.achievements) s.achievements = [];
-      if(!s.roomProgress || s.roomProgress.length < 6){
-        s.roomProgress = [{unlocked:true,cleared:false,levels:[0,0,0,0,0]},{unlocked:false,cleared:false,levels:[0,0,0,0,0]},{unlocked:false,cleared:false,levels:[0,0,0,0,0]},{unlocked:false,cleared:false,levels:[0,0,0,0,0]},{unlocked:false,cleared:false,levels:[0,0,0,0,0]},{unlocked:false,cleared:false,levels:[0,0,0,0,0]}];
-      }
-      // Ensure each room has proper structure
-      for(var ri = 0; ri < 6; ri++){
-        if(!s.roomProgress[ri]) s.roomProgress[ri] = {unlocked:ri===0,cleared:false,levels:[0,0,0,0,0]};
-        if(!s.roomProgress[ri].levels) s.roomProgress[ri].levels = [0,0,0,0,0];
-        if(s.roomProgress[ri].unlocked === undefined) s.roomProgress[ri].unlocked = (ri === 0);
-      }
-      if(!s.totalShots) s.totalShots = 0;
-      if(!s.totalPerfects) s.totalPerfects = 0;
-      if(!s.totalBosses) s.totalBosses = 0;
-      if(!s.totalCombos) s.totalCombos = 0;
-      if(!s.coins) s.coins = 0;
-      return s;
+  try{var s=JSON.parse(localStorage.getItem(SAVE_KEY));
+  if(s){
+    if(!s.ownedSkins)s.ownedSkins=['default'];
+    if(!s.ownedTrails)s.ownedTrails=['none'];
+    if(!s.ownedEffects)s.ownedEffects=['default'];
+    if(!s.achievements)s.achievements=[];
+    if(!s.roomProgress||s.roomProgress.length<6){
+      s.roomProgress=[];for(var i=0;i<6;i++)s.roomProgress.push({unlocked:i===0,cleared:false,levels:[0,0,0,0,0]});
     }
-  }catch(e){}
-  return {bestLevel:0,highScore:0,roomProgress:[{unlocked:true,cleared:false,levels:[0,0,0,0,0]},{unlocked:false,cleared:false,levels:[0,0,0,0,0]},{unlocked:false,cleared:false,levels:[0,0,0,0,0]},{unlocked:false,cleared:false,levels:[0,0,0,0,0]},{unlocked:false,cleared:false,levels:[0,0,0,0,0]},{unlocked:false,cleared:false,levels:[0,0,0,0,0]}],streak:0,lastPlay:'',coins:0,equippedSkin:'default',equippedTrail:'none',equippedEffect:'default',ownedSkins:['default'],ownedTrails:['none'],ownedEffects:['default'],achievements:[],dailySpinDate:'',tutorialDone:false,totalShots:0,totalPerfects:0,totalBosses:0,totalCombos:0};
+    for(var i=0;i<6;i++){
+      if(!s.roomProgress[i])s.roomProgress[i]={unlocked:i===0,cleared:false,levels:[0,0,0,0,0]};
+      if(!s.roomProgress[i].levels)s.roomProgress[i].levels=[0,0,0,0,0];
+    }
+    if(!s.totalShots)s.totalShots=0;if(!s.totalPerfects)s.totalPerfects=0;
+    if(!s.totalBosses)s.totalBosses=0;if(!s.totalCombos)s.totalCombos=0;
+    if(!s.coins)s.coins=0;
+    return s;
+  }}catch(e){}
+  return{bestLevel:0,highScore:0,roomProgress:[{unlocked:true,cleared:false,levels:[0,0,0,0,0]},{unlocked:false,cleared:false,levels:[0,0,0,0,0]},{unlocked:false,cleared:false,levels:[0,0,0,0,0]},{unlocked:false,cleared:false,levels:[0,0,0,0,0]},{unlocked:false,cleared:false,levels:[0,0,0,0,0]},{unlocked:false,cleared:false,levels:[0,0,0,0,0]}],streak:0,lastPlay:'',coins:0,equippedSkin:'default',equippedTrail:'none',equippedEffect:'default',ownedSkins:['default'],ownedTrails:['none'],ownedEffects:['default'],achievements:[],dailySpinDate:'',tutorialDone:false,totalShots:0,totalPerfects:0,totalBosses:0,totalCombos:0};
 }
+function saveSave(){save.coins=coins;save.equippedSkin=equippedSkin;save.equippedTrail=equippedTrail;save.equippedEffect=equippedEffect;localStorage.setItem(SAVE_KEY,JSON.stringify(save));}
+function initFromSave(){coins=save.coins||0;equippedSkin=save.equippedSkin||'default';equippedTrail=save.equippedTrail||'none';equippedEffect=save.equippedEffect||'default';}
 
-function saveSave(){
-  save.coins = coins;
-  save.equippedSkin = equippedSkin;
-  save.equippedTrail = equippedTrail;
-  save.equippedEffect = equippedEffect;
-  localStorage.setItem(SAVE_KEY, JSON.stringify(save));
-}
-
-function initFromSave(){
-  coins = save.coins || 0;
-  equippedSkin = save.equippedSkin || 'default';
-  equippedTrail = save.equippedTrail || 'none';
-  equippedEffect = save.equippedEffect || 'default';
-  tutorialDone = save.tutorialDone || false;
-}
-
-// ===== ROOMS =====
-const ROOMS = [
-  {name:'Glass Lab',icon:'ð¬',desc:'Where it all begins. Clean shots, glass targets.',color:'#1a3a5c',accent:'#4fc3f7',grid:'rgba(79,195,247,0.08)',targetTypes:['normal','hard','crystal'],bg1:'#0a1628',bg2:'#1a3a5c'},
-  {name:'Gravity Lab',icon:'ð',desc:'Gravity zones pull your ball. Master the curves.',color:'#2a1a4a',accent:'#ba68c8',grid:'rgba(186,104,200,0.08)',targetTypes:['normal','hard','crystal','moving'],bg1:'#10082a',bg2:'#2a1a4a'},
-  {name:'Chaos Lab',icon:'ð¥',desc:'Portals and lasers everywhere. Pure chaos.',color:'#4a1a1a',accent:'#ef5350',grid:'rgba(239,83,80,0.08)',targetTypes:['normal','hard','explosive','moving','crystal'],bg1:'#2a0808',bg2:'#4a1a1a'},
-  {name:'Neon Lab',icon:'ð',desc:'Neon lights and ghost targets. Tricky!',color:'#0a3a3a',accent:'#26c6da',grid:'rgba(38,198,218,0.08)',targetTypes:['normal','hard','ghost','crystal','moving'],bg1:'#041a1a',bg2:'#0a3a3a'},
-  {name:'Void Lab',icon:'ð³ï¸',desc:'Black holes consume everything. Be precise.',color:'#3a0a1a',accent:'#f44336',grid:'rgba(244,67,54,0.08)',targetTypes:['normal','hard','blackhole','explosive','moving','ghost'],bg1:'#1a0408',bg2:'#3a0a1a'},
-  {name:'Endless Lab',icon:'â¾ï¸',desc:'Infinite levels. How far can you go?',color:'#3a2a0a',accent:'#ffd54f',grid:'rgba(255,213,79,0.08)',targetTypes:['normal','hard','crystal','explosive','moving','ghost','blackhole'],bg1:'#1a1404',bg2:'#3a2a0a'}
+var ROOMS=[
+{name:'Glass Lab',icon:SCOPE,desc:'Clean shots, glass targets.',color:'#1a3a5c',accent:'#4fc3f7',grid:'rgba(79,195,247,0.08)',targetTypes:['normal','hard','crystal'],bg1:'#0a1628',bg2:'#1a3a5c'},
+{name:'Gravity Lab',icon:CYCLONE,desc:'Gravity zones pull your ball.',color:'#2a1a4a',accent:'#ba68c8',grid:'rgba(186,104,200,0.08)',targetTypes:['normal','hard','crystal','moving'],bg1:'#10082a',bg2:'#2a1a4a'},
+{name:'Chaos Lab',icon:FIRE,desc:'Portals and lasers. Pure chaos.',color:'#4a1a1a',accent:'#ef5350',grid:'rgba(239,83,80,0.08)',targetTypes:['normal','hard','explosive','moving','crystal'],bg1:'#2a0808',bg2:'#4a1a1a'},
+{name:'Neon Lab',icon:GEM,desc:'Ghost targets. Tricky!',color:'#0a3a3a',accent:'#26c6da',grid:'rgba(38,198,218,0.08)',targetTypes:['normal','hard','ghost','crystal','moving'],bg1:'#041a1a',bg2:'#0a3a3a'},
+{name:'Void Lab',icon:SKULL,desc:'Black holes. Be precise.',color:'#3a0a1a',accent:'#f44336',grid:'rgba(244,67,54,0.08)',targetTypes:['normal','hard','blackhole','explosive','moving','ghost'],bg1:'#1a0408',bg2:'#3a0a1a'},
+{name:'Endless Lab',icon:'\u221E',desc:'Infinite levels. How far?',color:'#3a2a0a',accent:'#ffd54f',grid:'rgba(255,213,79,0.08)',targetTypes:['normal','hard','crystal','explosive','moving','ghost','blackhole'],bg1:'#1a1404',bg2:'#3a2a0a'}
 ];
-
-// ===== SKINS SYSTEM =====
-const SKINS = [
-  {id:'default',name:'Classic',color:'#ff6b35',price:0,owned:true},
-  {id:'neon_blue',name:'Neon Blue',color:'#00bcd4',price:50},
-  {id:'neon_pink',name:'Neon Pink',color:'#e91e63',price:50},
-  {id:'neon_green',name:'Neon Green',color:'#76ff03',price:50},
-  {id:'gold',name:'Gold',color:'#ffd700',price:100},
-  {id:'plasma',name:'Plasma',color:'#9c27b0',price:100},
-  {id:'ice',name:'Ice',color:'#81d4fa',price:150},
-  {id:'fire',name:'Fire',color:'#ff5722',price:150},
-  {id:'rainbow',name:'Rainbow',color:'rainbow',price:300},
-  {id:'void',name:'Void',color:'#212121',price:250},
-  {id:'crystal',name:'Crystal',color:'#e0e0e0',price:200},
-  {id:'aurora',name:'Aurora',color:'#00e676',price:200}
+var SKINS=[
+{id:'default',name:'Classic',color:'#ff6b35',price:0},{id:'neon_blue',name:'Neon Blue',color:'#00bcd4',price:50},
+{id:'neon_pink',name:'Neon Pink',color:'#e91e63',price:50},{id:'neon_green',name:'Neon Green',color:'#76ff03',price:50},
+{id:'gold',name:'Gold',color:'#ffd700',price:100},{id:'plasma',name:'Plasma',color:'#9c27b0',price:100},
+{id:'ice',name:'Ice',color:'#81d4fa',price:150},{id:'fire',name:'Fire',color:'#ff5722',price:150},
+{id:'rainbow',name:'Rainbow',color:'rainbow',price:300},{id:'void',name:'Void',color:'#212121',price:250},
+{id:'crystal',name:'Crystal',color:'#e0e0e0',price:200},{id:'aurora',name:'Aurora',color:'#00e676',price:200}
 ];
-
-const TRAILS = [
-  {id:'none',name:'None',color:'transparent',price:0,owned:true},
-  {id:'fire_trail',name:'Fire',color:'#ff5722',price:80},
-  {id:'ice_trail',name:'Ice',color:'#81d4fa',price:80},
-  {id:'rainbow_trail',name:'Rainbow',color:'rainbow',price:200},
-  {id:'spark_trail',name:'Sparks',color:'#ffd700',price:120},
-  {id:'ghost_trail',name:'Ghost',color:'#b0bec5',price:150}
+var TRAILS=[
+{id:'none',name:'None',color:'transparent',price:0},{id:'fire_trail',name:'Fire',color:'#ff5722',price:80},
+{id:'ice_trail',name:'Ice',color:'#81d4fa',price:80},{id:'rainbow_trail',name:'Rainbow',color:'rainbow',price:200},
+{id:'spark_trail',name:'Sparks',color:'#ffd700',price:120},{id:'ghost_trail',name:'Ghost',color:'#b0bec5',price:150}
 ];
-
-const EFFECTS = [
-  {id:'default',name:'Classic',price:0,owned:true},
-  {id:'confetti',name:'Confetti',price:100},
-  {id:'fireworks',name:'Fireworks',price:150},
-  {id:'shatter',name:'Shatter+',price:200},
-  {id:'nova',name:'Nova',price:250}
+var EFFECTS=[{id:'default',name:'Classic',price:0},{id:'confetti',name:'Confetti',price:100},{id:'fireworks',name:'Fireworks',price:150},{id:'shatter',name:'Shatter+',price:200},{id:'nova',name:'Nova',price:250}];
+var ACHIEVEMENTS=[
+{id:'first_shot',name:'First Shot',desc:'Complete first level',icon:TARGET,check:function(){return save.bestLevel>=1}},
+{id:'perfect1',name:'Perfect!',desc:'Get a Perfect Shot',icon:BOOM,check:function(){return save.totalPerfects>=1}},
+{id:'perfect10',name:'Perfectionist',desc:'10 Perfect Shots',icon:FIRE,check:function(){return save.totalPerfects>=10}},
+{id:'combo5',name:'Combo Master',desc:'Get a 5x combo',icon:'\u26A1',check:function(){return save.totalCombos>=5}},
+{id:'boss1',name:'Boss Slayer',desc:'Defeat first boss',icon:GOLD,check:function(){return save.totalBosses>=1}},
+{id:'boss3',name:'Boss Hunter',desc:'Defeat 3 bosses',icon:GOLD,check:function(){return save.totalBosses>=3}},
+{id:'room2',name:'Explorer',desc:'Unlock Gravity Lab',icon:CYCLONE,check:function(){return save.roomProgress[1].unlocked}},
+{id:'coins100',name:'Collector',desc:'Earn 100 coins',icon:COIN,check:function(){return save.coins>=100}},
+{id:'coins500',name:'Rich',desc:'Earn 500 coins',icon:COIN,check:function(){return save.coins>=500}},
+{id:'streak3',name:'Dedicated',desc:'3-day streak',icon:FIRE,check:function(){return save.streak>=3}},
+{id:'streak7',name:'Addicted',desc:'7-day streak',icon:FIRE,check:function(){return save.streak>=7}},
+{id:'level10',name:'Veteran',desc:'Reach level 10',icon:STAR,check:function(){return save.bestLevel>=10}},
+{id:'level25',name:'Legend',desc:'Reach level 25',icon:SPARKLE,check:function(){return save.bestLevel>=25}}
 ];
+var FAKE_NAMES=['xNova','BlazeMaster','ShotKing','ChainGod','RicoGuru','BounceQueen','ComboLord','TargetPro','GlassBoy','NeonAce','VoidWalker','BossSlayer99','PerfectAim','LaserDodge','GravityKing'];
+function generateLeaderboard(){var lb=[];for(var i=0;i<15;i++)lb.push({name:FAKE_NAMES[i],score:Math.floor(Math.random()*5000+(15-i)*1000)});lb.sort(function(a,b){return b.score-a.score});return lb;}
 
-// ===== ACHIEVEMENTS =====
-const ACHIEVEMENTS = [
-  {id:'first_shot',name:'First Shot',desc:'Complete your first level',icon:'ð¯',check:()=>save.bestLevel>=1},
-  {id:'perfect1',name:'Perfect!',desc:'Get a Perfect Shot',icon:'ð¥',check:()=>save.totalPerfects>=1},
-  {id:'perfect10',name:'Perfectionist',desc:'Get 10 Perfect Shots',icon:'ð¥',check:()=>save.totalPerfects>=10},
-  {id:'combo5',name:'Combo Master',desc:'Get a 5x combo',icon:'â¡',check:()=>save.totalCombos>=5},
-  {id:'boss1',name:'Boss Slayer',desc:'Defeat your first boss',icon:'ð',check:()=>save.totalBosses>=1},
-  {id:'boss3',name:'Boss Hunter',desc:'Defeat 3 bosses',icon:'ð',check:()=>save.totalBosses>=3},
-  {id:'room2',name:'Explorer',desc:'Unlock Gravity Lab',icon:'ð',check:()=>save.roomProgress[1].unlocked},
-  {id:'room3',name:'Adventurer',desc:'Unlock Chaos Lab',icon:'ð¥',check:()=>save.roomProgress[2].unlocked},
-  {id:'coins100',name:'Collector',desc:'Earn 100 coins',icon:'ðª',check:()=>save.coins>=100},
-  {id:'coins500',name:'Rich',desc:'Earn 500 coins',icon:'ð°',check:()=>save.coins>=500},
-  {id:'streak3',name:'Dedicated',desc:'3-day streak',icon:'ð',check:()=>save.streak>=3},
-  {id:'streak7',name:'Addicted',desc:'7-day streak',icon:'ð¥',check:()=>save.streak>=7},
-  {id:'level10',name:'Veteran',desc:'Reach level 10',icon:'â­',check:()=>save.bestLevel>=10},
-  {id:'level25',name:'Legend',desc:'Reach level 25',icon:'ð',check:()=>save.bestLevel>=25},
-  {id:'shots100',name:'Sharpshooter',desc:'Fire 100 shots',icon:'ð¯',check:()=>save.totalShots>=100}
-];
-
-// ===== LEADERBOARD (SIMULATED) =====
-const FAKE_NAMES = ['xNova','BlazeMaster','ShotKing','ChainGod','RicoGuru','BounceQueen','ComboLord','TargetPro','GlassBoy','NeonAce','VoidWalker','BossSlayer99','PerfectAim','LaserDodge','GravityKing'];
-
-function generateLeaderboard(){
-  let lb = [];
-  for(let i = 0; i < 15; i++){
-    lb.push({name: FAKE_NAMES[i], score: Math.floor(Math.random() * 5000 + (15 - i) * 1000)});
-  }
-  lb.sort((a, b) => b.score - a.score);
-  return lb;
-}
-
-// ===== AUDIO ENGINE =====
-let audioCtx;
-function getAudio(){
-  if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
-  return audioCtx;
-}
-
-function playTone(freq,type,dur,vol){
-  try{
-    const a=getAudio(),o=a.createOscillator(),g=a.createGain();
-    o.type=type;o.frequency.value=freq;
-    g.gain.setValueAtTime((vol||0.15),a.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+dur);
-    o.connect(g);g.connect(a.destination);
-    o.start();o.stop(a.currentTime+dur);
-  }catch(e){}
-}
-
+var audioCtx;
+function getAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
+function playTone(f,t,d,v){try{var a=getAudio(),o=a.createOscillator(),g=a.createGain();o.type=t;o.frequency.value=f;g.gain.setValueAtTime(v||0.15,a.currentTime);g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+d);o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+d);}catch(e){}}
 function sndBounce(){playTone(800,'sine',0.05,0.08)}
 function sndHit(){playTone(500,'square',0.1,0.12);playTone(700,'sine',0.15,0.08)}
 function sndExplode(){playTone(150,'sawtooth',0.3,0.15);playTone(80,'square',0.4,0.1)}
-function sndCombo(n){for(let i=0;i<Math.min(n,8);i++){(function(j){setTimeout(function(){playTone(400+j*70,'sine',0.12,0.1)},j*50)})(i)}}
-function sndPerfect(){for(let i=0;i<6;i++){(function(j){setTimeout(function(){playTone(500+j*100,'sine',0.15,0.1)},j*70)})(i)}}
-function sndShatter(){playTone(200,'sawtooth',0.2,0.12);playTone(350,'square',0.15,0.08);playTone(100,'triangle',0.3,0.1)}
+function sndCombo(n){for(var i=0;i<Math.min(n,8);i++)(function(j){setTimeout(function(){playTone(400+j*70,'sine',0.12,0.1)},j*50)})(i)}
+function sndPerfect(){for(var i=0;i<6;i++)(function(j){setTimeout(function(){playTone(500+j*100,'sine',0.15,0.1)},j*70)})(i)}
+function sndShatter(){playTone(200,'sawtooth',0.2,0.12);playTone(350,'square',0.15,0.08)}
 function sndFail(){playTone(300,'sine',0.15,0.12);playTone(200,'sine',0.2,0.1)}
-function sndShoot(){playTone(600,'triangle',0.08,0.1);playTone(900,'sine',0.05,0.06)}
-function sndBoss(){playTone(100,'sawtooth',0.5,0.15);playTone(150,'square',0.4,0.12)}
+function sndShoot(){playTone(600,'triangle',0.08,0.1)}
+function sndBoss(){playTone(100,'sawtooth',0.5,0.15)}
 function sndCoin(){playTone(1200,'sine',0.08,0.08);playTone(1500,'sine',0.06,0.06)}
 function sndSpin(){playTone(800,'triangle',0.05,0.06)}
-function sndWin(){for(let i=0;i<8;i++){(function(j){setTimeout(function(){playTone(400+j*80,'sine',0.2,0.12)},j*80)})(i)}}
+function sndWin(){for(var i=0;i<8;i++)(function(j){setTimeout(function(){playTone(400+j*80,'sine',0.2,0.12)},j*80)})(i)}
 function sndAchieve(){playTone(800,'sine',0.15,0.1);setTimeout(function(){playTone(1000,'sine',0.15,0.1)},100);setTimeout(function(){playTone(1200,'sine',0.2,0.12)},200)}
 
-// ===== RESIZE =====
-function resize(){
-  W = C.width = CC.width = window.innerWidth;
-  H = C.height = CC.height = window.innerHeight;
-}
-window.addEventListener('resize', resize);
-resize();
-
-// ===== SCREEN MANAGEMENT =====
-function hideAll(){
-  document.querySelectorAll('.overlay').forEach(function(o){o.classList.remove('active');o.style.display='none'});
-  document.getElementById('hud').style.display='none';
-}
-
-function showScreen(id){
-  hideAll();
-  var el = document.getElementById(id);
-  el.style.display = 'flex';
-  el.classList.add('active');
-}
-
-function showMenu(){
-  initFromSave();
-  showScreen('menuS');
-  updateMenuInfo();
-  updateFOMO();
-  checkStreak();
-}
-
+function resize(){W=C.width=CC.width=window.innerWidth;H=C.height=CC.height=window.innerHeight;}
+window.addEventListener('resize',resize);resize();
+function hideAll(){document.querySelectorAll('.overlay').forEach(function(o){o.classList.remove('active');o.style.display='none'});document.getElementById('hud').style.display='none';}
+function showScreen(id){hideAll();var el=document.getElementById(id);el.style.display='flex';el.classList.add('active');}
+function showMenu(){initFromSave();showScreen('menuS');updateMenuInfo();updateFOMO();checkStreak();}
 function updateMenuInfo(){
-  document.getElementById('menuCoins').innerHTML = '&#x1FA99; ' + coins;
-  var si = document.getElementById('streakInfo');
-  if(save.streak > 0) si.innerHTML = '&#x1F525; ' + save.streak + ' day streak!';
-  else si.textContent = '';
-  var di = document.getElementById('dailyInfo');
-  var today = new Date().toDateString();
-  if(save.dailySpinDate === today) di.textContent = '✅ Daily spin used';
-  else di.innerHTML = '&#x1F3B0; Free daily spin available!';
+  document.getElementById('menuCoins').textContent=COIN+' '+coins;
+  var si=document.getElementById('streakInfo');
+  si.textContent=save.streak>0?FIRE+' '+save.streak+' day streak!':'';
+  var di=document.getElementById('dailyInfo');
+  var today=new Date().toDateString();
+  di.textContent=save.dailySpinDate===today?CHECK+' Daily spin used':SLOT+' Free daily spin available!';
 }
-
 function updateFOMO(){
-  var base = 2000 + Math.floor(Math.random()*3000);
-  var el = document.getElementById('fomo');
-  el.innerHTML = '&#x1F310; ' + base.toLocaleString() + ' playing now';
-  setInterval(function(){
-    base += Math.floor(Math.random()*20)-8;
-    if(base < 1500) base = 1500;
-    el.innerHTML = '&#x1F310; ' + base.toLocaleString() + ' playing now';
-  }, 3000);
+  var base=2000+Math.floor(Math.random()*3000);var el=document.getElementById('fomo');
+  el.textContent=GLOBE+' '+base.toLocaleString()+' playing now';
+  setInterval(function(){base+=Math.floor(Math.random()*20)-8;if(base<1500)base=1500;el.textContent=GLOBE+' '+base.toLocaleString()+' playing now';},3000);
 }
-
 function checkStreak(){
-  var today = new Date().toDateString();
-  if(save.lastPlay !== today){
-    var yesterday = new Date(Date.now()-86400000).toDateString();
-    if(save.lastPlay === yesterday) save.streak = (save.streak||0) + 1;
-    else if(save.lastPlay) save.streak = 1;
-    else save.streak = 1;
-    save.lastPlay = today;
-    saveSave();
-  }
+  var today=new Date().toDateString();
+  if(save.lastPlay!==today){var yesterday=new Date(Date.now()-86400000).toDateString();
+  if(save.lastPlay===yesterday)save.streak=(save.streak||0)+1;else save.streak=1;
+  save.lastPlay=today;saveSave();}
 }
-
-// ===== TUTORIAL =====
-const TUTORIAL_STEPS = [
-  {icon:'&#x1F3AF;',title:'Welcome!',text:'Shoot the ball to destroy all targets. Aim by dragging!'},
-  {icon:'&#x1F4A5;',title:'Chain Reactions',text:'Hit explosive targets to create chain reactions. More hits = more points!'},
-  {icon:'⭐',title:'Stars & Coins',text:'Save shots for more stars. Stars and combos earn coins for the shop!'},
-  {icon:'\ud83c\udfc6',title:'Boss Rooms',text:'Every 5th level is a Boss Room. Defeat the boss with just 1 shot!'},
-  {icon:'&#x1F680;',title:'Ready?',text:'Let\'s go! Tap to aim, release to shoot!'}
+var TUTORIAL_STEPS=[
+{icon:TARGET,title:'Welcome!',text:'Shoot the ball to destroy all targets. Aim by dragging!'},
+{icon:BOOM,title:'Chain Reactions',text:'Hit explosive targets to create chain reactions!'},
+{icon:STAR,title:'Stars & Coins',text:'Save shots for more stars. Earn coins for the shop!'},
+{icon:GOLD,title:'Boss Rooms',text:'Every 5th level is a Boss Room. 1 shot only!'},
+{icon:ROCKET,title:'Ready?',text:'Tap to aim, release to shoot!'}
 ];
-
-function startTutorial(){
-  tutorialStep = 0;
-  showTutorialStep();
-}
-
+var tutorialStep=-1;
+function startTutorial(){tutorialStep=0;showTutorialStep();}
 function showTutorialStep(){
-  if(tutorialStep >= TUTORIAL_STEPS.length){
-    save.tutorialDone = true;
-    tutorialDone = true;
-    saveSave();
-    document.getElementById('tutorialS').style.display = 'none';
-    document.getElementById('tutorialS').classList.remove('active');
-    startWorldMap();
-    return;
-  }
-  var s = TUTORIAL_STEPS[tutorialStep];
-  document.getElementById('tutIcon').textContent = s.icon;
-  document.getElementById('tutTitle').textContent = s.title;
-  document.getElementById('tutText').textContent = s.text;
-  document.getElementById('tutBtn').textContent = tutorialStep === TUTORIAL_STEPS.length - 1 ? 'START!' : 'NEXT \u2192';
+  if(tutorialStep>=TUTORIAL_STEPS.length){save.tutorialDone=true;saveSave();startWorldMap();return;}
+  var s=TUTORIAL_STEPS[tutorialStep];
+  document.getElementById('tutIcon').textContent=s.icon;
+  document.getElementById('tutTitle').textContent=s.title;
+  document.getElementById('tutText').textContent=s.text;
+  document.getElementById('tutBtn').textContent=tutorialStep===TUTORIAL_STEPS.length-1?'START!':'NEXT \u2192';
   showScreen('tutorialS');
 }
-
-function nextTutorial(){
-  tutorialStep++;
-  showTutorialStep();
-}
-
-// ===== WORLD MAP =====
+function nextTutorial(){tutorialStep++;showTutorialStep();}
 function startWorldMap(){
-  showScreen('worldMapS');
-  document.getElementById('mapCoins').innerHTML = '&#x1FA99; ' + coins;
-  var grid = document.getElementById('roomGrid');
-  grid.innerHTML = '';
-  ROOMS.forEach(function(room, ri){
-    var rp = save.roomProgress[ri];
-    var isLocked = !rp.unlocked;
-    var stars = rp.levels.reduce(function(a,b){return a+b},0);
-    var maxStars = rp.levels.length * 3;
-    var completedLevels = rp.levels.filter(function(l){return l>0}).length;
-    var card = document.createElement('div');
-    card.className = 'room-card' + (isLocked ? ' locked' : '');
-    var progressPct = (completedLevels / rp.levels.length * 100);
-    var progressColor = room.accent;
-    card.innerHTML = '<div class="room-icon">' + room.icon + '</div>' +
-      '<div class="room-name">' + room.name + '</div>' +
-      '<div class="room-stars">' + (isLocked ? '&#x1F512;' : '⭐ ' + stars + '/' + maxStars) + '</div>' +
-      '<div class="room-info">' + (isLocked ? 'LOCKED' : completedLevels + '/' + rp.levels.length + ' levels') + '</div>' +
-      (isLocked ? '<div class="lock-icon">&#x1F512;</div>' : '') +
-      '<div class="room-progress"><div class="room-progress-fill" style="width:' + progressPct + '%;background:' + progressColor + '"></div></div>' +
-      (rp.levels[4] === 0 && !isLocked ? '<div style="color:#ff1744;font-size:0.6em;margin-top:3px">BOSS LVL</div>' : '');
-    if(!isLocked){
-      card.onclick = function(){ openRoomIntro(ri); };
-      card.style.borderColor = room.accent;
-    }
+  showScreen('worldMapS');document.getElementById('mapCoins').textContent=COIN+' '+coins;
+  var grid=document.getElementById('roomGrid');grid.innerHTML='';
+  ROOMS.forEach(function(room,ri){
+    var rp=save.roomProgress[ri];var isLocked=!rp.unlocked;
+    var stars=rp.levels.reduce(function(a,b){return a+b},0);
+    var cl=rp.levels.filter(function(l){return l>0}).length;
+    var card=document.createElement('div');card.className='room-card'+(isLocked?' locked':'');
+    var pp=(cl/rp.levels.length*100);
+    card.innerHTML='<div class="room-icon">'+room.icon+'</div><div class="room-name">'+room.name+'</div><div class="room-stars">'+(isLocked?LOCK:STAR+' '+stars+'/'+rp.levels.length*3)+'</div><div class="room-info">'+(isLocked?'LOCKED':cl+'/'+rp.levels.length+' levels')+'</div>'+(isLocked?'<div class="lock-icon">'+LOCK+'</div>':'')+'<div class="room-progress"><div class="room-progress-fill" style="width:'+pp+'%;background:'+room.accent+'"></div></div>'+(rp.levels[4]===0&&!isLocked?'<div style="color:#ff1744;font-size:0.6em;margin-top:3px">BOSS LVL</div>':'');
+    if(!isLocked){card.onclick=function(){openRoomIntro(ri)};card.style.borderColor=room.accent;}
     grid.appendChild(card);
   });
 }
-
-// ===== ROOM INTRO =====
 function openRoomIntro(ri){
-  currentRoom = ri;
-  var room = ROOMS[ri];
-  var rp = save.roomProgress[ri];
-  document.getElementById('riIcon').textContent = room.icon;
-  document.getElementById('riName').textContent = room.name;
-  document.getElementById('riName').style.color = room.accent;
-  document.getElementById('riDesc').textContent = room.desc;
-  var dots = document.getElementById('riDots');
-  dots.innerHTML = '';
-  for(var i = 0; i < 5; i++){
-    var dot = document.createElement('div');
-    dot.className = 'level-dot';
-    var isBoss = (i === 4);
-    var starCount = rp.levels[i];
-    if(starCount > 0) dot.classList.add('completed');
-    else{
-      var prevOk = (i === 0) || rp.levels[i-1] > 0;
-      if(prevOk) dot.classList.add('current');
-      else dot.classList.add('locked');
-    }
-    if(isBoss) dot.classList.add('boss');
-    dot.innerHTML = isBoss ? '&#x1F480;' : (i + 1);
-    dot.style.borderColor = isBoss ? '#ff1744' : room.accent;
-    if(!dot.classList.contains('locked')){
-      (function(li){
-        dot.onclick = function(){ startRoomLevel(ri, li); };
-      })(i);
-    }
+  currentRoom=ri;var room=ROOMS[ri];var rp=save.roomProgress[ri];
+  document.getElementById('riIcon').textContent=room.icon;
+  document.getElementById('riName').textContent=room.name;
+  document.getElementById('riName').style.color=room.accent;
+  document.getElementById('riDesc').textContent=room.desc;
+  var dots=document.getElementById('riDots');dots.innerHTML='';
+  for(var i=0;i<5;i++){
+    var dot=document.createElement('div');dot.className='level-dot';
+    var ib=(i===4);var sc=rp.levels[i];
+    if(sc>0)dot.classList.add('completed');
+    else{var prev=(i===0)||rp.levels[i-1]>0;if(prev)dot.classList.add('current');else dot.classList.add('locked');}
+    if(ib)dot.classList.add('boss');
+    dot.textContent=ib?SKULL:(i+1);
+    dot.style.borderColor=ib?'#ff1744':room.accent;
+    if(!dot.classList.contains('locked')){(function(li){dot.onclick=function(){startRoomLevel(ri,li)};})(i);}
     dots.appendChild(dot);
   }
   showScreen('roomIntroS');
 }
 
-// ===== LEVEL GENERATION =====
-function startRoomLevel(ri, li){
-  currentRoom = ri;
-  currentRoomLevel = li;
-  isBossRoom = (li === 4);
-  var room = ROOMS[ri];
-  var globalLevel = ri * 5 + li + 1;
-  level = globalLevel;
-  generateLevel(room, li, globalLevel);
-  hideAll();
-  document.getElementById('hud').style.display = 'flex';
-  document.getElementById('hudRoom').textContent = room.name;
-  gameActive = true;
-  score = 0;
-  combo = 0;
-  maxCombo = 0;
-  isRecording = true;
-  replayFrames = [];
-  updateHUD();
+function startRoomLevel(ri,li){
+  currentRoom=ri;currentRoomLevel=li;isBossRoom=(li===4);
+  var room=ROOMS[ri];var gl=ri*5+li+1;level=gl;
+  generateLevel(room,li,gl);hideAll();
+  document.getElementById('hud').style.display='flex';
+  document.getElementById('hudRoom').textContent=room.name;
+  gameActive=true;score=0;combo=0;maxCombo=0;updateHUD();
 }
-
-function generateLevel(room, li, gl){
-  balls = [];
-  targets = [];
-  walls = [];
-  particles = [];
-  shockwaves = [];
-  textPops = [];
-  confetti = [];
-  trailParticles = [];
-  screenShake = 0;
-  slowMo = 1;
-  slowMoTimer = 0;
-
-  var margin = 50;
-  var topMargin = 80;
-  var playW = W - margin * 2;
-  var playH = H - topMargin - margin;
-
-  // Shots
-  if(isBossRoom){
-    shotsLeft = totalShots = 1;
-  } else {
-    totalShots = Math.max(2, 5 - Math.floor(li / 2));
-    shotsLeft = totalShots;
+function generateLevel(room,li,gl){
+  balls=[];targets=[];walls=[];particles=[];shockwaves=[];textPops=[];confetti=[];trailParticles=[];
+  screenShake=0;slowMo=1;slowMoTimer=0;
+  var margin=50,topMargin=80,playW=W-margin*2,playH=H-topMargin-margin;
+  if(isBossRoom){shotsLeft=totalShots=1;}else{totalShots=Math.max(2,5-Math.floor(li/2));shotsLeft=totalShots;}
+  launchX=W/2;launchY=H-60;
+  var numT=isBossRoom?1:Math.min(3+li+Math.floor(gl/3),15);
+  var types=room.targetTypes;
+  for(var i=0;i<numT;i++){
+    var tx=margin+Math.random()*playW,ty=topMargin+30+Math.random()*(playH*0.55);
+    var type=types[Math.floor(Math.random()*types.length)];
+    if(isBossRoom)type='boss';
+    targets.push({x:tx,y:ty,r:isBossRoom?30:(type==='hard'?10:14),type:type,
+    hp:isBossRoom?5:(type==='hard'?2:1),maxHp:isBossRoom?5:(type==='hard'?2:1),
+    alive:true,pulse:0,angle:Math.random()*Math.PI*2,
+    speed:type==='moving'?(1+gl*0.1):0,moveDir:Math.random()>0.5?1:-1,
+    ghostTimer:0,ghostVisible:true,bh_pull:type==='blackhole'?(50+gl*2):0});
   }
-
-  // Launch point
-  launchX = W / 2;
-  launchY = H - 60;
-
-  // Targets
-  var numTargets = isBossRoom ? 1 : Math.min(3 + li + Math.floor(gl / 3), 15);
-  var types = room.targetTypes;
-
-  for(var i = 0; i < numTargets; i++){
-    var tx = margin + Math.random() * playW;
-    var ty = topMargin + 30 + Math.random() * (playH * 0.55);
-    var type = types[Math.floor(Math.random() * types.length)];
-    if(isBossRoom) type = 'boss';
-    var t = {
-      x: tx, y: ty, r: isBossRoom ? 30 : (type === 'hard' ? 10 : 14),
-      type: type, hp: isBossRoom ? 5 : (type === 'hard' ? 2 : 1),
-      maxHp: isBossRoom ? 5 : (type === 'hard' ? 2 : 1),
-      alive: true, pulse: 0, angle: Math.random() * Math.PI * 2,
-      speed: type === 'moving' ? (1 + gl * 0.1) : 0,
-      moveDir: Math.random() > 0.5 ? 1 : -1,
-      ghostTimer: 0, ghostVisible: true,
-      bh_pull: type === 'blackhole' ? (50 + gl * 2) : 0
-    };
-    targets.push(t);
-  }
-
-  targetsLeft = targets.filter(function(t){return t.alive}).length;
-
-  // Walls
-  var numWalls = Math.min(Math.floor(gl / 3), 6);
-  for(var i = 0; i < numWalls; i++){
-    var wx = margin + Math.random() * playW;
-    var wy = topMargin + Math.random() * playH;
-    var ww = 40 + Math.random() * 80;
-    var wh = 8;
-    if(Math.random() > 0.5){var tmp = ww; ww = wh; wh = tmp;}
-    walls.push({x: wx, y: wy, w: ww, h: wh});
+  targetsLeft=targets.filter(function(t){return t.alive}).length;
+  var numW=Math.min(Math.floor(gl/3),6);
+  for(var i=0;i<numW;i++){
+    var wx=margin+Math.random()*playW,wy=topMargin+Math.random()*playH;
+    var ww=40+Math.random()*80,wh=8;if(Math.random()>0.5){var tmp=ww;ww=wh;wh=tmp;}
+    walls.push({x:wx,y:wy,w:ww,h:wh});
   }
 }
-
-// ===== BALL SKIN COLOR =====
-function getBallColor(t){
-  var skin = SKINS.find(function(s){return s.id === equippedSkin});
-  if(!skin) return '#ff6b35';
-  if(skin.color === 'rainbow'){
-    return 'hsl(' + ((t || Date.now()) * 0.1 % 360) + ',100%,60%)';
-  }
-  return skin.color;
+function getBallColor(t){var skin=SKINS.find(function(s){return s.id===equippedSkin});if(!skin)return'#ff6b35';if(skin.color==='rainbow')return'hsl('+((t||Date.now())*0.1%360)+',100%,60%)';return skin.color;}
+function shoot(dx,dy){
+  if(!gameActive||shooting||shotsLeft<=0)return;
+  var dist=Math.sqrt(dx*dx+dy*dy);if(dist<10)return;
+  shooting=true;shotsLeft--;save.totalShots=(save.totalShots||0)+1;
+  var speed=10,vx=(dx/dist)*speed,vy=(dy/dist)*speed;
+  balls.push({x:launchX,y:launchY,vx:vx,vy:vy,r:8,active:true,bounces:0,trail:[]});
+  sndShoot();updateHUD();
 }
+C.addEventListener('mousedown',function(e){if(!gameActive||shooting)return;aiming=true;aimX=e.clientX;aimY=e.clientY;});
+C.addEventListener('mousemove',function(e){if(aiming){aimX=e.clientX;aimY=e.clientY;}});
+C.addEventListener('mouseup',function(e){if(!aiming)return;aiming=false;shoot(aimX-launchX,aimY-launchY);});
+C.addEventListener('touchstart',function(e){if(!gameActive||shooting)return;e.preventDefault();aiming=true;aimX=e.touches[0].clientX;aimY=e.touches[0].clientY;},{passive:false});
+C.addEventListener('touchmove',function(e){if(aiming){e.preventDefault();aimX=e.touches[0].clientX;aimY=e.touches[0].clientY;}},{passive:false});
+C.addEventListener('touchend',function(e){if(!aiming)return;aiming=false;e.preventDefault();shoot(aimX-launchX,aimY-launchY);},{passive:false});
 
-// ===== SHOOTING =====
-function shoot(dx, dy){
-  if(!gameActive || shooting || shotsLeft <= 0) return;
-  var dist = Math.sqrt(dx*dx + dy*dy);
-  if(dist < 10) return;
-  shooting = true;
-  shotsLeft--;
-  save.totalShots = (save.totalShots||0) + 1;
-  var speed = 10;
-  var vx = (dx / dist) * speed;
-  var vy = (dy / dist) * speed;
-  balls.push({x: launchX, y: launchY, vx: vx, vy: vy, r: 8, active: true, bounces: 0, trail: []});
-  sndShoot();
-  updateHUD();
-}
+function spawnParticles(x,y,color,count,speed,size){for(var i=0;i<count;i++){var a=Math.random()*Math.PI*2,s=Math.random()*(speed||5)+1;particles.push({x:x,y:y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,r:Math.random()*(size||4)+1,color:color,life:1,decay:0.015+Math.random()*0.02,gravity:0.05+Math.random()*0.05});}}
+function spawnShockwave(x,y,color){shockwaves.push({x:x,y:y,r:5,maxR:80,color:color,life:1});}
+function spawnConfetti(x,y,count){var colors=['#ff6b35','#f7c948','#4CAF50','#2196F3','#e91e63','#9c27b0','#00bcd4'];for(var i=0;i<count;i++)confetti.push({x:x+Math.random()*100-50,y:y,vx:Math.random()*8-4,vy:Math.random()*-12-2,r:Math.random()*6+2,color:colors[Math.floor(Math.random()*colors.length)],rotation:Math.random()*360,rotSpeed:Math.random()*10-5,life:1,decay:0.008+Math.random()*0.005,gravity:0.15});}
+function spawnTrailParticle(x,y){if(equippedTrail==='none')return;var trail=TRAILS.find(function(t){return t.id===equippedTrail});if(!trail)return;var color=trail.color==='rainbow'?'hsl('+(Date.now()*0.5%360)+',100%,60%)':trail.color;trailParticles.push({x:x+Math.random()*4-2,y:y+Math.random()*4-2,r:Math.random()*4+2,color:color,life:1,decay:0.03});}
+function showComboText(n){var texts=['','DOUBLE!','TRIPLE!','QUAD!','PENTA!','INSANE!','GODLIKE!','UNSTOPPABLE!'];var colors=['','#4CAF50','#2196F3','#9c27b0','#ff6b35','#f7c948','#e91e63','#ff1744'];var idx=Math.min(n,texts.length-1);if(idx<2)return;var el=document.createElement('div');el.className='combo-text';el.textContent=texts[idx];el.style.color=colors[idx];el.style.left=(W/2-80)+'px';el.style.top=(H/2-50+Math.random()*40)+'px';el.style.fontSize=(2+idx*0.3)+'em';document.body.appendChild(el);setTimeout(function(){el.remove()},1000);sndCombo(idx);}
+function showScoreFly(x,y,amount){var el=document.createElement('div');el.className='score-fly';el.textContent='+'+amount;el.style.left=x+'px';el.style.top=y+'px';document.body.appendChild(el);setTimeout(function(){el.remove()},800);}
+function showCoinFly(x,y,amount){var el=document.createElement('div');el.className='score-fly';el.textContent=COIN+' +'+amount;el.style.left=x+'px';el.style.top=y+'px';el.style.color='#f7c948';document.body.appendChild(el);setTimeout(function(){el.remove()},800);sndCoin();}
+function triggerShake(intensity){screenShake=Math.max(screenShake,intensity);}
+function triggerSlowMo(duration){slowMo=0.3;slowMoTimer=duration;}
 
-// ===== INPUT =====
-C.addEventListener('mousedown', function(e){
-  if(!gameActive || shooting) return;
-  aiming = true;
-  aimX = e.clientX;
-  aimY = e.clientY;
-});
-C.addEventListener('mousemove', function(e){
-  if(aiming){aimX = e.clientX; aimY = e.clientY;}
-});
-C.addEventListener('mouseup', function(e){
-  if(!aiming) return;
-  aiming = false;
-  var dx = aimX - launchX;
-  var dy = aimY - launchY;
-  shoot(dx, dy);
-});
-C.addEventListener('touchstart', function(e){
-  if(!gameActive || shooting) return;
-  e.preventDefault();
-  aiming = true;
-  aimX = e.touches[0].clientX;
-  aimY = e.touches[0].clientY;
-},{passive:false});
-C.addEventListener('touchmove', function(e){
-  if(aiming){e.preventDefault();aimX = e.touches[0].clientX;aimY = e.touches[0].clientY;}
-},{passive:false});
-C.addEventListener('touchend', function(e){
-  if(!aiming) return;
-  aiming = false;
-  e.preventDefault();
-  var dx = aimX - launchX;
-  var dy = aimY - launchY;
-  shoot(dx, dy);
-},{passive:false});
-
-// ===== PARTICLE SYSTEM =====
-function spawnParticles(x, y, color, count, speed, size){
-  for(var i = 0; i < count; i++){
-    var angle = Math.random() * Math.PI * 2;
-    var spd = Math.random() * (speed || 5) + 1;
-    particles.push({
-      x: x, y: y,
-      vx: Math.cos(angle) * spd,
-      vy: Math.sin(angle) * spd,
-      r: Math.random() * (size || 4) + 1,
-      color: color,
-      life: 1,
-      decay: 0.015 + Math.random() * 0.02,
-      gravity: 0.05 + Math.random() * 0.05
-    });
-  }
-}
-
-function spawnShockwave(x, y, color){
-  shockwaves.push({x: x, y: y, r: 5, maxR: 80, color: color, life: 1});
-}
-
-function spawnTextPop(x, y, text, color, size){
-  textPops.push({x: x, y: y, text: text, color: color, size: size || 20, life: 1, vy: -2});
-}
-
-function spawnConfetti(x, y, count){
-  var colors = ['#ff6b35','#f7c948','#4CAF50','#2196F3','#e91e63','#9c27b0','#00bcd4'];
-  for(var i = 0; i < count; i++){
-    confetti.push({
-      x: x + Math.random() * 100 - 50,
-      y: y,
-      vx: Math.random() * 8 - 4,
-      vy: Math.random() * -12 - 2,
-      r: Math.random() * 6 + 2,
-      color: colors[Math.floor(Math.random() * colors.length)],
-      rotation: Math.random() * 360,
-      rotSpeed: Math.random() * 10 - 5,
-      life: 1,
-      decay: 0.008 + Math.random() * 0.005,
-      gravity: 0.15
-    });
-  }
-}
-
-function spawnTrailParticle(x, y){
-  if(equippedTrail === 'none') return;
-  var trail = TRAILS.find(function(t){return t.id === equippedTrail});
-  if(!trail) return;
-  var color = trail.color === 'rainbow' ? 'hsl(' + (Date.now() * 0.5 % 360) + ',100%,60%)' : trail.color;
-  trailParticles.push({
-    x: x + Math.random() * 4 - 2,
-    y: y + Math.random() * 4 - 2,
-    r: Math.random() * 4 + 2,
-    color: color,
-    life: 1,
-    decay: 0.03
-  });
-}
-
-// ===== COMBO TEXT =====
-function showComboText(n){
-  var texts = ['','DOUBLE!','TRIPLE!','QUAD!','PENTA!','INSANE!','GODLIKE!','UNSTOPPABLE!'];
-  var colors = ['','#4CAF50','#2196F3','#9c27b0','#ff6b35','#f7c948','#e91e63','#ff1744'];
-  var idx = Math.min(n, texts.length - 1);
-  if(idx < 2) return;
-  var el = document.createElement('div');
-  el.className = 'combo-text';
-  el.textContent = texts[idx];
-  el.style.color = colors[idx];
-  el.style.left = (W/2 - 80) + 'px';
-  el.style.top = (H/2 - 50 + Math.random()*40) + 'px';
-  el.style.fontSize = (2 + idx * 0.3) + 'em';
-  document.body.appendChild(el);
-  setTimeout(function(){el.remove()},1000);
-  sndCombo(idx);
-}
-
-function showScoreFly(x, y, amount){
-  var el = document.createElement('div');
-  el.className = 'score-fly';
-  el.textContent = '+' + amount;
-  el.style.left = x + 'px';
-  el.style.top = y + 'px';
-  document.body.appendChild(el);
-  setTimeout(function(){el.remove()},800);
-}
-
-function showCoinFly(x, y, amount){
-  var el = document.createElement('div');
-  el.className = 'score-fly';
-  el.innerHTML = '&#x1FA99; +' + amount;
-  el.style.left = x + 'px';
-  el.style.top = y + 'px';
-  el.style.color = '#f7c948';
-  document.body.appendChild(el);
-  setTimeout(function(){el.remove()},800);
-  sndCoin();
-}
-
-// ===== SCREEN SHAKE =====
-function triggerShake(intensity){
-  screenShake = Math.max(screenShake, intensity);
-}
-
-// ===== SLOW MOTION =====
-function triggerSlowMo(duration){
-  slowMo = 0.3;
-  slowMoTimer = duration;
-}
-
-// ===== PHYSICS UPDATE =====
 function update(){
-  // Slow motion
-  if(slowMoTimer > 0){
-    slowMoTimer -= 16;
-    if(slowMoTimer <= 0){slowMo = 1; slowMoTimer = 0;}
-  }
-
-  // Screen shake decay
-  if(screenShake > 0) screenShake *= 0.9;
-  if(screenShake < 0.5) screenShake = 0;
-
-  // Update targets (moving, ghost)
-  targets.forEach(function(t){
-    if(!t.alive) return;
-    if(t.type === 'moving'){
-      t.x += t.speed * t.moveDir * slowMo;
-      if(t.x < 50 || t.x > W - 50) t.moveDir *= -1;
-    }
-    if(t.type === 'ghost'){
-      t.ghostTimer += 16 * slowMo;
-      t.ghostVisible = Math.sin(t.ghostTimer * 0.003) > -0.3;
-    }
-    t.pulse = Math.max(0, (t.pulse || 0) - 0.02);
+  if(slowMoTimer>0){slowMoTimer-=16;if(slowMoTimer<=0){slowMo=1;slowMoTimer=0;}}
+  if(screenShake>0)screenShake*=0.9;if(screenShake<0.5)screenShake=0;
+  targets.forEach(function(t){if(!t.alive)return;
+    if(t.type==='moving'){t.x+=t.speed*t.moveDir*slowMo;if(t.x<50||t.x>W-50)t.moveDir*=-1;}
+    if(t.type==='ghost'){t.ghostTimer+=16*slowMo;t.ghostVisible=Math.sin(t.ghostTimer*0.003)>-0.3;}
+    t.pulse=Math.max(0,(t.pulse||0)-0.02);
   });
-
-  // Update balls
-  var allBallsDone = true;
-  balls.forEach(function(b){
-    if(!b.active) return;
-    allBallsDone = false;
-
-    // Trail
-    b.trail.push({x: b.x, y: b.y, life: 1});
-    if(b.trail.length > 20) b.trail.shift();
-    b.trail.forEach(function(tp){tp.life -= 0.05});
-    spawnTrailParticle(b.x, b.y);
-
-    // Apply slow motion
-    var svx = b.vx * slowMo;
-    var svy = b.vy * slowMo;
-
-    // Gravity zones (Room 2+)
-    if(currentRoom >= 1){
-      targets.forEach(function(t){
-        if(t.type === 'blackhole' && t.alive){
-          var dx = t.x - b.x, dy = t.y - b.y;
-          var dist = Math.sqrt(dx*dx + dy*dy);
-          if(dist < t.bh_pull && dist > 5){
-            var force = 2 / dist;
-            b.vx += (dx / dist) * force;
-            b.vy += (dy / dist) * force;
-          }
-        }
-      });
-    }
-
-    b.x += svx;
-    b.y += svy;
-    b.vy += 0.04 * slowMo; // light gravity
-
-    // Wall bounce
-    if(b.x < b.r){b.x = b.r; b.vx = Math.abs(b.vx); b.bounces++; sndBounce(); triggerShake(2);}
-    if(b.x > W - b.r){b.x = W - b.r; b.vx = -Math.abs(b.vx); b.bounces++; sndBounce(); triggerShake(2);}
-    if(b.y < b.r){b.y = b.r; b.vy = Math.abs(b.vy); b.bounces++; sndBounce(); triggerShake(2);}
-
-    // Floor = ball lost
-    if(b.y > H + 50){b.active = false; return;}
-
-    // Wall collision
-    walls.forEach(function(w){
-      if(b.x + b.r > w.x && b.x - b.r < w.x + w.w && b.y + b.r > w.y && b.y - b.r < w.y + w.h){
-        var overlapL = (b.x + b.r) - w.x;
-        var overlapR = (w.x + w.w) - (b.x - b.r);
-        var overlapT = (b.y + b.r) - w.y;
-        var overlapB = (w.y + w.h) - (b.y - b.r);
-        var minOverlap = Math.min(overlapL, overlapR, overlapT, overlapB);
-        if(minOverlap === overlapL || minOverlap === overlapR) b.vx *= -1;
-        else b.vy *= -1;
-        b.bounces++;
-        sndBounce();
-        triggerShake(2);
-        spawnParticles(b.x, b.y, '#888', 3, 2, 2);
-      }
-    });
-
-    // Target collision
-    targets.forEach(function(t){
-      if(!t.alive) return;
-      if(t.type === 'ghost' && !t.ghostVisible) return;
-      var dx = b.x - t.x, dy = b.y - t.y;
-      var dist = Math.sqrt(dx*dx + dy*dy);
-      if(dist < b.r + t.r){
-        t.hp--;
-        t.pulse = 1;
-        triggerShake(t.type === 'boss' ? 8 : 4);
-
-        if(t.hp <= 0){
-          t.alive = false;
-          targetsLeft--;
-          combo++;
-          if(combo > maxCombo) maxCombo = combo;
-
-          // Score
-          var pts = t.type === 'boss' ? 500 : (t.type === 'hard' ? 30 : (t.type === 'crystal' ? 40 : 20));
-          pts = pts * Math.max(1, combo);
-          score += pts;
-          showScoreFly(t.x, t.y - 20, pts);
-
-          // Coins
-          var coinAmt = Math.floor(pts / 20) + (combo > 2 ? combo : 0);
-          coins += coinAmt;
-          showCoinFly(t.x + 20, t.y, coinAmt);
-
-          // Effects
-          var effectColor = t.type === 'explosive' ? '#ff5722' : (t.type === 'crystal' ? '#81d4fa' : ROOMS[currentRoom].accent);
-          spawnParticles(t.x, t.y, effectColor, 20 + combo * 5, 6, 5);
-          spawnShockwave(t.x, t.y, effectColor);
-
-          if(t.type === 'explosive'){
-            sndExplode();
-            triggerShake(10);
-            // Chain explosion
-            targets.forEach(function(t2){
-              if(t2.alive && t2 !== t){
-                var d2 = Math.sqrt(Math.pow(t2.x-t.x,2)+Math.pow(t2.y-t.y,2));
-                if(d2 < 100){
-                  t2.hp -= 2;
-                  if(t2.hp <= 0){
-                    t2.alive = false;
-                    targetsLeft--;
-                    combo++;
-                    if(combo > maxCombo) maxCombo = combo;
-                    var p2 = 20 * combo;
-                    score += p2;
-                    showScoreFly(t2.x, t2.y - 20, p2);
-                    spawnParticles(t2.x, t2.y, '#ff5722', 15, 5, 4);
-                    spawnShockwave(t2.x, t2.y, '#ff5722');
-                  }
-                }
-              }
-            });
-            spawnParticles(t.x, t.y, '#ff5722', 40, 10, 8);
-          } else if(t.type === 'crystal'){
-            sndShatter();
-            // Glass shards
-            for(var s = 0; s < 12; s++){
-              var angle = Math.random() * Math.PI * 2;
-              var spd = Math.random() * 6 + 2;
-              particles.push({
-                x: t.x, y: t.y,
-                vx: Math.cos(angle)*spd, vy: Math.sin(angle)*spd,
-                r: Math.random()*5+2, color: 'rgba(200,230,255,0.8)',
-                life: 1, decay: 0.01, gravity: 0.1,
-                isShard: true, rotation: Math.random()*360, rotSpeed: Math.random()*10
-              });
-            }
-          } else if(t.type === 'boss'){
-            sndBoss();
-            triggerShake(15);
-            triggerSlowMo(1500);
-            spawnConfetti(t.x, t.y, 60);
-            spawnParticles(t.x, t.y, '#f7c948', 50, 10, 8);
-          } else {
-            sndHit();
-          }
-
-          // Combo text
-          showComboText(combo);
-
-          // Slow mo on big combo
-          if(combo >= 3) triggerSlowMo(400);
-        } else {
-          // Target damaged but alive
-          sndHit();
-          spawnParticles(t.x, t.y, '#fff', 5, 3, 2);
-          // Bounce ball
-          b.vx = (dx/dist) * 7;
-          b.vy = (dy/dist) * 7;
-        }
-      }
-    });
+  var allBallsDone=true;
+  balls.forEach(function(b){if(!b.active)return;allBallsDone=false;
+    b.trail.push({x:b.x,y:b.y,life:1});if(b.trail.length>20)b.trail.shift();
+    b.trail.forEach(function(tp){tp.life-=0.05});spawnTrailParticle(b.x,b.y);
+    if(currentRoom>=1){targets.forEach(function(t){if(t.type==='blackhole'&&t.alive){
+      var dx=t.x-b.x,dy=t.y-b.y,dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist<t.bh_pull&&dist>5){var force=2/dist;b.vx+=(dx/dist)*force;b.vy+=(dy/dist)*force;}}});}
+    b.x+=b.vx*slowMo;b.y+=b.vy*slowMo;b.vy+=0.04*slowMo;
+    if(b.x<b.r){b.x=b.r;b.vx=Math.abs(b.vx);b.bounces++;sndBounce();triggerShake(2);}
+    if(b.x>W-b.r){b.x=W-b.r;b.vx=-Math.abs(b.vx);b.bounces++;sndBounce();triggerShake(2);}
+    if(b.y<b.r){b.y=b.r;b.vy=Math.abs(b.vy);b.bounces++;sndBounce();triggerShake(2);}
+    if(b.y>H+50){b.active=false;return;}
+    walls.forEach(function(w){if(b.x+b.r>w.x&&b.x-b.r<w.x+w.w&&b.y+b.r>w.y&&b.y-b.r<w.y+w.h){
+      var oL=(b.x+b.r)-w.x,oR=(w.x+w.w)-(b.x-b.r),oT=(b.y+b.r)-w.y,oB=(w.y+w.h)-(b.y-b.r);
+      var m=Math.min(oL,oR,oT,oB);if(m===oL||m===oR)b.vx*=-1;else b.vy*=-1;
+      b.bounces++;sndBounce();triggerShake(2);spawnParticles(b.x,b.y,'#888',3,2,2);}});
+    targets.forEach(function(t){if(!t.alive)return;if(t.type==='ghost'&&!t.ghostVisible)return;
+      var dx=b.x-t.x,dy=b.y-t.y,dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist<b.r+t.r){t.hp--;t.pulse=1;triggerShake(t.type==='boss'?8:4);
+        if(t.hp<=0){t.alive=false;targetsLeft--;combo++;if(combo>maxCombo)maxCombo=combo;
+          var pts=t.type==='boss'?500:(t.type==='hard'?30:(t.type==='crystal'?40:20));
+          pts=pts*Math.max(1,combo);score+=pts;showScoreFly(t.x,t.y-20,pts);
+          var coinAmt=Math.floor(pts/20)+(combo>2?combo:0);coins+=coinAmt;showCoinFly(t.x+20,t.y,coinAmt);
+          var ec=t.type==='explosive'?'#ff5722':(t.type==='crystal'?'#81d4fa':ROOMS[currentRoom].accent);
+          spawnParticles(t.x,t.y,ec,20+combo*5,6,5);spawnShockwave(t.x,t.y,ec);
+          if(t.type==='explosive'){sndExplode();triggerShake(10);
+            targets.forEach(function(t2){if(t2.alive&&t2!==t){var d2=Math.sqrt(Math.pow(t2.x-t.x,2)+Math.pow(t2.y-t.y,2));
+            if(d2<100){t2.hp-=2;if(t2.hp<=0){t2.alive=false;targetsLeft--;combo++;if(combo>maxCombo)maxCombo=combo;
+            var p2=20*combo;score+=p2;showScoreFly(t2.x,t2.y-20,p2);spawnParticles(t2.x,t2.y,'#ff5522',15,5,4);spawnShockwave(t2.x,t2.y,'#ff5522');}}}});
+            spawnParticles(t.x,t.y,'#ff5722',40,10,8);
+          }else if(t.type==='crystal'){sndShatter();
+            for(var s=0;s<12;s++){var angle=Math.random()*Math.PI*2,spd=Math.random()*6+2;
+            particles.push({x:t.x,y:t.y,vx:Math.cos(angle)*spd,vy:Math.sin(angle)*spd,r:Math.random()*5+2,color:'rgba(200,230,255,0.8)',life:1,decay:0.01,gravity:0.1,isShard:true,rotation:Math.random()*360,rotSpeed:Math.random()*10});}
+          }else if(t.type==='boss'){sndBoss();triggerShake(15);triggerSlowMo(1500);spawnConfetti(t.x,t.y,60);spawnParticles(t.x,t.y,'#f7c948',50,10,8);
+          }else{sndHit();}
+          showComboText(combo);if(combo>=3)triggerSlowMo(400);
+        }else{sndHit();spawnParticles(t.x,t.y,'#fff',5,3,2);b.vx=(dx/dist)*7;b.vy=(dy/dist)*7;}}});
   });
-
-  // Trail particles update
-  trailParticles.forEach(function(tp){tp.life -= tp.decay});
-  trailParticles = trailParticles.filter(function(tp){return tp.life > 0});
-
-  // Particles update
-  particles.forEach(function(p){
-    p.x += p.vx * slowMo;
-    p.y += p.vy * slowMo;
-    p.vy += (p.gravity || 0) * slowMo;
-    p.life -= p.decay * slowMo;
-    if(p.isShard) p.rotation += (p.rotSpeed || 0);
-  });
-  particles = particles.filter(function(p){return p.life > 0});
-
-  // Shockwaves update
-  shockwaves.forEach(function(s){
-    s.r += 3 * slowMo;
-    s.life -= 0.03 * slowMo;
-  });
-  shockwaves = shockwaves.filter(function(s){return s.life > 0});
-
-  // TextPops update
-  textPops.forEach(function(t){
-    t.y += t.vy;
-    t.life -= 0.02;
-  });
-  textPops = textPops.filter(function(t){return t.life > 0});
-
-  // Confetti update
-  confetti.forEach(function(c){
-    c.x += c.vx;
-    c.y += c.vy;
-    c.vy += c.gravity;
-    c.rotation += c.rotSpeed;
-    c.life -= c.decay;
-  });
-  confetti = confetti.filter(function(c){return c.life > 0});
-
-  // Check win/lose
-  if(shooting && allBallsDone && balls.length > 0){
-    shooting = false;
-    combo = 0;
-    if(targetsLeft <= 0){
-      setTimeout(levelComplete, 300);
-    } else if(shotsLeft <= 0){
-      setTimeout(gameOver, 500);
-    }
-  }
-
+  trailParticles.forEach(function(tp){tp.life-=tp.decay});trailParticles=trailParticles.filter(function(tp){return tp.life>0});
+  particles.forEach(function(p){p.x+=p.vx*slowMo;p.y+=p.vy*slowMo;p.vy+=(p.gravity||0)*slowMo;p.life-=p.decay*slowMo;if(p.isShard)p.rotation+=(p.rotSpeed||0);});
+  particles=particles.filter(function(p){return p.life>0});
+  shockwaves.forEach(function(s){s.r+=3*slowMo;s.life-=0.03*slowMo;});shockwaves=shockwaves.filter(function(s){return s.life>0});
+  confetti.forEach(function(c){c.x+=c.vx;c.y+=c.vy;c.vy+=c.gravity;c.rotation+=c.rotSpeed;c.life-=c.decay;});
+  confetti=confetti.filter(function(c){return c.life>0});
+  if(shooting&&allBallsDone&&balls.length>0){shooting=false;combo=0;
+    if(targetsLeft<=0)setTimeout(levelComplete,300);
+    else if(shotsLeft<=0)setTimeout(gameOver,500);}
   updateHUD();
 }
 
-// ===== HUD =====
 function updateHUD(){
-  document.getElementById('hudLevel').textContent = level;
-  document.getElementById('hudShots').textContent = shotsLeft;
-  document.getElementById('hudScore').textContent = score;
-  document.getElementById('hudCoins').innerHTML = '&#x1FA99; ' + coins;
-  var dots = '';
-  targets.forEach(function(t){
-    dots += t.alive ? '●' : '○';
-  });
-  document.getElementById('hudTargets').textContent = dots;
+  document.getElementById('hudLevel').textContent=level;
+  document.getElementById('hudShots').textContent=shotsLeft;
+  document.getElementById('hudScore').textContent=score;
+  document.getElementById('hudCoins').textContent=COIN+' '+coins;
+  var dots='';targets.forEach(function(t){dots+=t.alive?'\u25CF':'\u25CB';});
+  document.getElementById('hudTargets').textContent=dots;
 }
-
-// ===== LEVEL COMPLETE =====
 function levelComplete(){
-  gameActive = false;
-  isRecording = false;
-  var starsEarned = shotsLeft >= 2 ? 3 : (shotsLeft >= 1 ? 2 : 1);
-  var isPerfect = (totalShots - shotsLeft <= 1) && targetsLeft <= 0 && targets.length > 1;
-
-  if(isPerfect){
-    save.totalPerfects = (save.totalPerfects || 0) + 1;
-    sndPerfect();
-    triggerSlowMo(1000);
-    spawnConfetti(W/2, H/2, 80);
-  } else {
-    sndWin();
-    spawnConfetti(W/2, H/3, 40);
-  }
-
-  // Coin bonus
-  var coinBonus = starsEarned * 5 + (isPerfect ? 25 : 0) + (maxCombo > 2 ? maxCombo * 3 : 0);
-  coins += coinBonus;
-
-  // Save progress
-  if(save.roomProgress[currentRoom]){
-    var old = save.roomProgress[currentRoom].levels[currentRoomLevel];
-    if(starsEarned > old) save.roomProgress[currentRoom].levels[currentRoomLevel] = starsEarned;
-  }
-
-  var globalLevel = currentRoom * 5 + currentRoomLevel + 1;
-  if(globalLevel > save.bestLevel) save.bestLevel = globalLevel;
-  if(score > save.highScore) save.highScore = score;
-  if(maxCombo >= 5) save.totalCombos = (save.totalCombos || 0) + 1;
-
-  // Boss check
-  if(isBossRoom){
-    save.totalBosses = (save.totalBosses || 0) + 1;
-    if(currentRoom < ROOMS.length - 1){
-      save.roomProgress[currentRoom].cleared = true;
-      save.roomProgress[currentRoom + 1].unlocked = true;
-    }
-    saveSave();
-    checkAchievements();
-    setTimeout(function(){showBossClear(coinBonus)}, 500);
-    return;
-  }
-
-  saveSave();
-  checkAchievements();
-
-  // Show level complete
-  var lcEmoji = document.getElementById('lcEmoji');
-  var lcTitle = document.getElementById('lcTitle');
-  var lcStars = document.getElementById('lcStars');
-  var lcScore = document.getElementById('lcScore');
-  var lcCoins = document.getElementById('lcCoins');
-  var lcPerfect = document.getElementById('lcPerfect');
-
-  lcEmoji.innerHTML = isPerfect ? '&#x1F4A5;' : '&#x1F389;';
-  lcTitle.textContent = isPerfect ? 'PERFECT SHOT!' : 'LEVEL COMPLETE!';
-  lcTitle.style.color = isPerfect ? '#ff6b35' : '#4CAF50';
-  lcStars.textContent = '⭐'.repeat(starsEarned) + '☆'.repeat(3 - starsEarned);
-  lcScore.textContent = '+' + score;
-  lcCoins.innerHTML = '&#x1FA99; +' + coinBonus;
-  lcPerfect.style.display = isPerfect ? 'block' : 'none';
-
+  gameActive=false;var starsEarned=shotsLeft>=2?3:(shotsLeft>=1?2:1);
+  var isPerfect=(totalShots-shotsLeft<=1)&&targetsLeft<=0&&targets.length>1;
+  if(isPerfect){save.totalPerfects=(save.totalPerfects||0)+1;sndPerfect();triggerSlowMo(1000);spawnConfetti(W/2,H/2,80);}
+  else{sndWin();spawnConfetti(W/2,H/3,40);}
+  var coinBonus=starsEarned*5+(isPerfect?25:0)+(maxCombo>2?maxCombo*3:0);coins+=coinBonus;
+  if(save.roomProgress[currentRoom]){var old=save.roomProgress[currentRoom].levels[currentRoomLevel];
+  if(starsEarned>old)save.roomProgress[currentRoom].levels[currentRoomLevel]=starsEarned;}
+  var gl=currentRoom*5+currentRoomLevel+1;
+  if(gl>save.bestLevel)save.bestLevel=gl;if(score>save.highScore)save.highScore=score;
+  if(maxCombo>=5)save.totalCombos=(save.totalCombos||0)+1;
+  if(isBossRoom){save.totalBosses=(save.totalBosses||0)+1;
+    if(currentRoom<ROOMS.length-1){save.roomProgress[currentRoom].cleared=true;save.roomProgress[currentRoom+1].unlocked=true;}
+    saveSave();checkAchievements();setTimeout(function(){showBossClear(coinBonus)},500);return;}
+  saveSave();checkAchievements();
+  document.getElementById('lcEmoji').textContent=isPerfect?BOOM:PARTY;
+  document.getElementById('lcTitle').textContent=isPerfect?'PERFECT SHOT!':'LEVEL COMPLETE!';
+  document.getElementById('lcTitle').style.color=isPerfect?'#ff6b35':'#4CAF50';
+  document.getElementById('lcStars').textContent=STAR.repeat(starsEarned)+STAR_E.repeat(3-starsEarned);
+  document.getElementById('lcScore').textContent='+'+score;
+  document.getElementById('lcCoins').textContent=COIN+' +'+coinBonus;
+  document.getElementById('lcPerfect').style.display=isPerfect?'block':'none';
+  document.getElementById('lcPerfect').textContent=isPerfect?BOOM+' PERFECT SHOT!':'';
   showScreen('levelCompleteS');
 }
-
 function showBossClear(coinBonus){
-  var room = ROOMS[currentRoom];
-  var nextRoom = currentRoom < ROOMS.length - 1 ? ROOMS[currentRoom + 1] : null;
-  document.getElementById('bcRoom').textContent = room.name + ' CLEARED!';
-  document.getElementById('bcUnlock').innerHTML = nextRoom ? '&#x1F513; ' + nextRoom.name + ' Unlocked!' : '&#x1F31F; All Rooms Complete!';
-  document.getElementById('bcCoins').innerHTML = '&#x1FA99; +' + (coinBonus + 50);
-  coins += 50;
-  saveSave();
-  sndWin();
-  spawnConfetti(W/2, H/3, 100);
-  showScreen('bossClearS');
+  var room=ROOMS[currentRoom];var next=currentRoom<ROOMS.length-1?ROOMS[currentRoom+1]:null;
+  document.getElementById('bcRoom').textContent=room.name+' CLEARED!';
+  document.getElementById('bcUnlock').textContent=next?UNLOCK+' '+next.name+' Unlocked!':SPARKLE+' All Rooms Complete!';
+  document.getElementById('bcCoins').textContent=COIN+' +'+(coinBonus+50);
+  coins+=50;saveSave();sndWin();spawnConfetti(W/2,H/3,100);showScreen('bossClearS');
 }
-
 function nextLevel(){
-  if(isBossRoom && currentRoom < ROOMS.length - 1){
-    openRoomIntro(currentRoom + 1);
-  } else if(currentRoomLevel < 4){
-    startRoomLevel(currentRoom, currentRoomLevel + 1);
-  } else {
-    startWorldMap();
-  }
+  if(isBossRoom&&currentRoom<ROOMS.length-1)openRoomIntro(currentRoom+1);
+  else if(currentRoomLevel<4)startRoomLevel(currentRoom,currentRoomLevel+1);
+  else startWorldMap();
 }
-
-// ===== GAME OVER =====
 function gameOver(){
-  gameActive = false;
-  isRecording = false;
-  sndFail();
-
-  var leftCount = targets.filter(function(t){return t.alive}).length;
-  var total = targets.length;
-
-  // "Tuh be" system
-  var goEmoji = document.getElementById('goEmoji');
-  var goTitle = document.getElementById('goTitle');
-  var goSubtitle = document.getElementById('goSubtitle');
-  var goTargetLeft = document.getElementById('goTargetLeft');
-
-  if(leftCount === 1){
-    goEmoji.innerHTML = '&#x1F629;';
-    goTitle.textContent = 'SO CLOSE!';
-    goSubtitle.textContent = 'Just ONE target left!';
-    goTargetLeft.innerHTML = '&#x1F4A2; Almost had it!';
-    triggerSlowMo(800);
-    // Pulse the remaining target
-    targets.forEach(function(t){if(t.alive) t.pulse = 2;});
-  } else if(leftCount <= 2){
-    goEmoji.innerHTML = '&#x1F624;';
-    goTitle.textContent = 'ALMOST!';
-    goSubtitle.textContent = leftCount + ' targets remaining';
-    goTargetLeft.textContent = 'So close yet so far...';
-  } else {
-    goEmoji.innerHTML = '&#x1F614;';
-    goTitle.textContent = 'TRY AGAIN';
-    goSubtitle.textContent = leftCount + '/' + total + ' targets left';
-    goTargetLeft.textContent = 'You can do this!';
-  }
-
-  triggerShake(6);
-  showScreen('gameOverS');
+  gameActive=false;sndFail();
+  var leftCount=targets.filter(function(t){return t.alive}).length;var total=targets.length;
+  if(leftCount===1){document.getElementById('goEmoji').textContent=CRY;document.getElementById('goTitle').textContent='SO CLOSE!';
+    document.getElementById('goSubtitle').textContent='Just ONE target left!';document.getElementById('goTargetLeft').textContent=RAGE+' Almost had it!';
+    triggerSlowMo(800);targets.forEach(function(t){if(t.alive)t.pulse=2;});
+  }else if(leftCount<=2){document.getElementById('goEmoji').textContent=ANGRY;document.getElementById('goTitle').textContent='ALMOST!';
+    document.getElementById('goSubtitle').textContent=leftCount+' targets remaining';document.getElementById('goTargetLeft').textContent='So close yet so far...';
+  }else{document.getElementById('goEmoji').textContent=SAD;document.getElementById('goTitle').textContent='TRY AGAIN';
+    document.getElementById('goSubtitle').textContent=leftCount+'/'+total+' targets left';document.getElementById('goTargetLeft').textContent='You can do this!';}
+  triggerShake(6);showScreen('gameOverS');
 }
-
-function retryLevel(){
-  startRoomLevel(currentRoom, currentRoomLevel);
-}
-
-// ===== REPLAY =====
-function showReplay(){
-  alert('Replay coming soon!');
-}
-
-// ===== SHARE =====
-function shareScore(){
-  var text = 'I scored ' + score + ' on Level ' + level + ' in Ricochet Lab! Can you beat me? &#x1F52C;&#x1F3AF;';
-  if(navigator.share){
-    navigator.share({title:'Ricochet Lab',text:text,url:window.location.href}).catch(function(){});
-  } else {
-    navigator.clipboard.writeText(text + ' ' + window.location.href).then(function(){
-      alert('Score copied to clipboard!');
-    }).catch(function(){
-      alert(text);
-    });
-  }
-}
-
-// ===== SHOP =====
-function openShop(){
-  showScreen('shopS');
-  document.getElementById('shopCoins').innerHTML = '&#x1FA99; ' + coins;
-  shopTab('skins');
-}
-
-function closeShop(){showMenu()}
-
+function retryLevel(){startRoomLevel(currentRoom,currentRoomLevel);}
+function shareScore(){var text='I scored '+score+' on Level '+level+' in Ricochet Lab! Can you beat me?';if(navigator.share)navigator.share({title:'Ricochet Lab',text:text,url:location.href}).catch(function(){});else{navigator.clipboard.writeText(text+' '+location.href).then(function(){alert('Copied!')}).catch(function(){alert(text)});}}
+function openShop(){showScreen('shopS');document.getElementById('shopCoins').textContent=COIN+' '+coins;shopTab('skins');}
+function closeShop(){showMenu();}
 function shopTab(tab){
-  var tabs = document.querySelectorAll('.tab-btn');
-  tabs.forEach(function(t,i){
-    t.classList.remove('active');
-    if((tab==='skins'&&i===0)||(tab==='trails'&&i===1)||(tab==='effects'&&i===2)) t.classList.add('active');
-  });
-  var grid = document.getElementById('shopGrid');
-  grid.innerHTML = '';
-  var items = tab === 'skins' ? SKINS : (tab === 'trails' ? TRAILS : EFFECTS);
-  var ownedList = tab === 'skins' ? save.ownedSkins : (tab === 'trails' ? save.ownedTrails : save.ownedEffects);
-  var equipped = tab === 'skins' ? equippedSkin : (tab === 'trails' ? equippedTrail : equippedEffect);
-
+  var tabs=document.querySelectorAll('.tab-btn');tabs.forEach(function(t,i){t.classList.remove('active');
+  if((tab==='skins'&&i===0)||(tab==='trails'&&i===1)||(tab==='effects'&&i===2))t.classList.add('active');});
+  var grid=document.getElementById('shopGrid');grid.innerHTML='';
+  var items=tab==='skins'?SKINS:(tab==='trails'?TRAILS:EFFECTS);
+  var ownedList=tab==='skins'?save.ownedSkins:(tab==='trails'?save.ownedTrails:save.ownedEffects);
+  var equipped=tab==='skins'?equippedSkin:(tab==='trails'?equippedTrail:equippedEffect);
   items.forEach(function(item){
-    var owned = ownedList.indexOf(item.id) !== -1;
-    var isEquipped = equipped === item.id;
-    var div = document.createElement('div');
-    div.className = 'shop-item' + (isEquipped ? ' equipped' : (owned ? ' owned' : ''));
-
-    var preview = '';
-    if(tab === 'skins'){
-      var bgColor = item.color === 'rainbow' ? 'linear-gradient(135deg,#ff0000,#ff7700,#ffff00,#00ff00,#0000ff,#8b00ff)' : item.color;
-      preview = '<div class="skin-preview" style="background:' + bgColor + ';box-shadow:0 0 10px ' + (item.color === 'rainbow' ? '#fff' : item.color) + '"></div>';
-    } else if(tab === 'trails'){
-      var tColor = item.color === 'rainbow' ? '#fff' : (item.color === 'transparent' ? '#555' : item.color);
-      preview = '<div style="font-size:1.8em;margin-bottom:4px;color:' + tColor + '">\u2728</div>';
-    } else {
-      preview = '<div style="font-size:1.8em;margin-bottom:4px">&#x1F4A5;</div>';
-    }
-
-    div.innerHTML = preview +
-      '<div class="skin-name">' + item.name + '</div>' +
-      '<div class="skin-price">' + (isEquipped ? '✅ EQUIPPED' : (owned ? 'TAP TO EQUIP' : '&#x1FA99; ' + item.price)) + '</div>';
-
-    div.onclick = function(){
-      if(isEquipped) return;
-      if(owned){
-        // Equip
-        if(tab === 'skins') equippedSkin = item.id;
-        else if(tab === 'trails') equippedTrail = item.id;
-        else equippedEffect = item.id;
-        saveSave();
-        shopTab(tab);
-      } else if(coins >= item.price){
-        // Buy
-        coins -= item.price;
-        ownedList.push(item.id);
-        if(tab === 'skins') equippedSkin = item.id;
-        else if(tab === 'trails') equippedTrail = item.id;
-        else equippedEffect = item.id;
-        sndCoin();
-        saveSave();
-        shopTab(tab);
-        document.getElementById('shopCoins').innerHTML = '&#x1FA99; ' + coins;
-      }
-    };
-    grid.appendChild(div);
-  });
+    var owned=ownedList.indexOf(item.id)!==-1;var isEq=equipped===item.id;
+    var div=document.createElement('div');div.className='shop-item'+(isEq?' equipped':(owned?' owned':''));
+    var preview='';
+    if(tab==='skins'){var bg=item.color==='rainbow'?'linear-gradient(135deg,red,orange,yellow,green,blue,violet)':item.color;
+      preview='<div class="skin-preview" style="background:'+bg+';box-shadow:0 0 10px '+item.color+'"></div>';}
+    else{preview='<div style="font-size:1.8em;margin-bottom:4px">'+(tab==='trails'?'\u2728':BOOM)+'</div>';}
+    div.innerHTML=preview+'<div class="skin-name">'+item.name+'</div><div class="skin-price">'+(isEq?CHECK+' EQUIPPED':(owned?'TAP TO EQUIP':COIN+' '+item.price))+'</div>';
+    div.onclick=function(){
+      if(isEq)return;if(owned){if(tab==='skins')equippedSkin=item.id;else if(tab==='trails')equippedTrail=item.id;else equippedEffect=item.id;saveSave();shopTab(tab);}
+      else if(coins>=item.price){coins-=item.price;ownedList.push(item.id);if(tab==='skins')equippedSkin=item.id;else if(tab==='trails')equippedTrail=item.id;else equippedEffect=item.id;sndCoin();saveSave();shopTab(tab);document.getElementById('shopCoins').textContent=COIN+' '+coins;}};
+    grid.appendChild(div);});
 }
+function openAchievements(){showScreen('achieveS');var list=document.getElementById('achieveList');list.innerHTML='';
+  ACHIEVEMENTS.forEach(function(a){var unlocked=save.achievements.indexOf(a.id)!==-1;var div=document.createElement('div');
+  div.className='achievement'+(unlocked?' unlocked':'');
+  div.innerHTML='<div class="ach-icon">'+(unlocked?a.icon:LOCK)+'</div><div class="ach-info"><div class="ach-name">'+a.name+'</div><div class="ach-desc">'+a.desc+'</div></div><div class="ach-status">'+(unlocked?CHECK:'')+'</div>';
+  list.appendChild(div);});}
+function closeAchievements(){showMenu();}
+function checkAchievements(){var newA=false;ACHIEVEMENTS.forEach(function(a){if(save.achievements.indexOf(a.id)===-1&&a.check()){save.achievements.push(a.id);newA=true;showAchPopup(a);coins+=15;}});if(newA)saveSave();}
+function showAchPopup(a){sndAchieve();var p=document.createElement('div');p.className='achievement-popup';
+  p.innerHTML='<div class="ap-icon">'+a.icon+'</div><div><div class="ap-text">Achievement Unlocked!</div><div class="ap-name">'+a.name+'</div></div>';
+  document.body.appendChild(p);setTimeout(function(){p.style.opacity='0';p.style.transition='opacity 0.5s';setTimeout(function(){p.remove()},500)},2500);}
+function openLeaderboard(){showScreen('leaderboardS');var list=document.getElementById('lbList');list.innerHTML='';
+  var lb=generateLeaderboard();var pr=-1;
+  for(var i=0;i<lb.length;i++){if(save.highScore>lb[i].score){lb.splice(i,0,{name:'YOU',score:save.highScore,isMe:true});pr=i;break;}}
+  if(pr===-1)lb.push({name:'YOU',score:save.highScore,isMe:true});lb=lb.slice(0,15);
+  lb.forEach(function(e,idx){var row=document.createElement('div');row.className='lb-row'+(e.isMe?' me':'');
+  var rt=idx===0?GOLD:(idx===1?SILVER:(idx===2?BRONZE:(idx+1)));
+  row.innerHTML='<div class="lb-rank">'+rt+'</div><div class="lb-name">'+e.name+'</div><div class="lb-score">'+e.score.toLocaleString()+'</div>';
+  list.appendChild(row);});}
+function closeLeaderboard(){showMenu();}
 
-// ===== ACHIEVEMENTS =====
-function openAchievements(){
-  showScreen('achieveS');
-  renderAchievements();
+function openDailyReward(){showScreen('dailySpinS');var today=new Date().toDateString();var used=save.dailySpinDate===today;
+  document.getElementById('spinBtn').disabled=used;document.getElementById('spinBtn').style.opacity=used?'0.5':'1';
+  document.getElementById('spinStatus').textContent=used?'Come back tomorrow!':'Spin for free rewards!';
+  document.getElementById('spinResult').style.display='none';renderWheel();}
+function closeDailySpin(){showMenu();}
+var SPIN_REWARDS=[{label:'10',coins:10,color:'#ff6b35'},{label:'25',coins:25,color:'#4CAF50'},{label:'50',coins:50,color:'#2196F3'},{label:'100',coins:100,color:'#f7c948'},{label:'15',coins:15,color:'#9c27b0'},{label:'200',coins:200,color:'#e91e63'},{label:'30',coins:30,color:'#00bcd4'},{label:'75',coins:75,color:'#ff9800'}];
+function renderWheel(){var w=document.getElementById('spinWheel');w.innerHTML='';var sa=360/SPIN_REWARDS.length;
+  SPIN_REWARDS.forEach(function(r,i){var seg=document.createElement('div');seg.className='spin-segment';seg.style.transform='rotate('+i*sa+'deg)';seg.style.color=r.color;seg.textContent=COIN+' '+r.label;w.appendChild(seg);});
+  w.style.background='conic-gradient('+SPIN_REWARDS.map(function(r,i){return r.color+'22 '+(i/SPIN_REWARDS.length*100)+'% '+((i+1)/SPIN_REWARDS.length*100)+'%'}).join(',')+')';
 }
-
-function closeAchievements(){showMenu()}
-
-function renderAchievements(){
-  var list = document.getElementById('achieveList');
-  list.innerHTML = '';
-  ACHIEVEMENTS.forEach(function(a){
-    var unlocked = save.achievements.indexOf(a.id) !== -1;
-    var div = document.createElement('div');
-    div.className = 'achievement' + (unlocked ? ' unlocked' : '');
-    div.innerHTML = '<div class="ach-icon">' + (unlocked ? a.icon : '&#x1F512;') + '</div>' +
-      '<div class="ach-info"><div class="ach-name">' + a.name + '</div><div class="ach-desc">' + a.desc + '</div></div>' +
-      '<div class="ach-status">' + (unlocked ? '✅' : '') + '</div>';
-    list.appendChild(div);
-  });
+function doSpin(){var today=new Date().toDateString();if(save.dailySpinDate===today)return;
+  document.getElementById('spinBtn').disabled=true;document.getElementById('spinBtn').style.opacity='0.5';
+  var ri=Math.floor(Math.random()*SPIN_REWARDS.length);var reward=SPIN_REWARDS[ri];
+  var sa=360/SPIN_REWARDS.length;var ta=360*5+(360-ri*sa-sa/2);
+  var w=document.getElementById('spinWheel');w.style.transition='transform 3s cubic-bezier(0.17,0.67,0.12,0.99)';w.style.transform='rotate('+ta+'deg)';
+  var tick=setInterval(function(){sndSpin()},100);setTimeout(function(){clearInterval(tick)},2800);
+  setTimeout(function(){coins+=reward.coins;save.dailySpinDate=today;saveSave();sndWin();spawnConfetti(W/2,H/2,40);
+  document.getElementById('spinResult').textContent='You won '+reward.coins+' coins!';document.getElementById('spinResult').style.display='block';
+  document.getElementById('spinStatus').textContent='Come back tomorrow!';},3200);
 }
-
-function checkAchievements(){
-  var newAch = false;
-  ACHIEVEMENTS.forEach(function(a){
-    if(save.achievements.indexOf(a.id) === -1 && a.check()){
-      save.achievements.push(a.id);
-      newAch = true;
-      showAchievementPopup(a);
-      coins += 15; // Achievement reward
-    }
-  });
-  if(newAch) saveSave();
+var bgParticles=[];
+function initBg(){bgParticles=[];for(var i=0;i<50;i++)bgParticles.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*2+0.5,speed:Math.random()*0.3+0.1,opacity:Math.random()*0.3+0.1,drift:Math.random()*0.5-0.25});}
+initBg();
+function drawBg(){
+  var room=ROOMS[currentRoom]||ROOMS[0];var grad=ctx.createLinearGradient(0,0,0,H);
+  grad.addColorStop(0,room.bg1);grad.addColorStop(1,room.bg2);ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle=room.grid;ctx.lineWidth=1;
+  for(var x=0;x<W;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(var y=0;y<H;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  bgParticles.forEach(function(p){p.y-=p.speed;p.x+=p.drift;if(p.y<-5){p.y=H+5;p.x=Math.random()*W;}
+  ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.globalAlpha=p.opacity;ctx.fillStyle=room.accent;ctx.fill();ctx.globalAlpha=1;});
 }
-
-function showAchievementPopup(a){
-  sndAchieve();
-  var popup = document.createElement('div');
-  popup.className = 'achievement-popup';
-  popup.innerHTML = '<div class="ap-icon">' + a.icon + '</div><div><div class="ap-text">Achievement Unlocked!</div><div class="ap-name">' + a.name + '</div></div>';
-  document.body.appendChild(popup);
-  setTimeout(function(){popup.style.opacity='0';popup.style.transition='opacity 0.5s';setTimeout(function(){popup.remove()},500)},2500);
-}
-
-// ===== LEADERBOARD =====
-function openLeaderboard(){
-  showScreen('leaderboardS');
-  var list = document.getElementById('lbList');
-  list.innerHTML = '';
-  var lb = generateLeaderboard();
-  // Insert player
-  var playerRank = -1;
-  for(var i = 0; i < lb.length; i++){
-    if(save.highScore > lb[i].score){
-      lb.splice(i, 0, {name:'YOU', score: save.highScore, isMe: true});
-      playerRank = i;
-      break;
-    }
-  }
-  if(playerRank === -1){
-    lb.push({name:'YOU', score: save.highScore, isMe: true});
-  }
-  lb = lb.slice(0, 15);
-
-  lb.forEach(function(entry, idx){
-    var row = document.createElement('div');
-    row.className = 'lb-row' + (entry.isMe ? ' me' : '');
-    var rankText = (idx === 0) ? '&#x1F947;' : (idx === 1 ? '&#x1F948;' : (idx === 2 ? '&#x1F949;' : (idx + 1)));
-    row.innerHTML = '<div class="lb-rank">' + rankText + '</div><div class="lb-name">' + entry.name + '</div><div class="lb-score">' + entry.score.toLocaleString() + '</div>';
-    list.appendChild(row);
-  });
-}
-
-function closeLeaderboard(){showMenu()}
-
-// ===== DAILY SPIN =====
-function openDailyReward(){
-  showScreen('dailySpinS');
-  var today = new Date().toDateString();
-  var used = save.dailySpinDate === today;
-  document.getElementById('spinBtn').disabled = used;
-  document.getElementById('spinBtn').style.opacity = used ? '0.5' : '1';
-  document.getElementById('spinStatus').textContent = used ? 'Come back tomorrow!' : 'Spin for free rewards!';
-  document.getElementById('spinResult').style.display = 'none';
-  renderWheel();
-}
-
-function closeDailySpin(){showMenu()}
-
-const SPIN_REWARDS = [
-  {label:'&#x1FA99; 10',coins:10,color:'#ff6b35'},
-  {label:'&#x1FA99; 25',coins:25,color:'#4CAF50'},
-  {label:'&#x1FA99; 50',coins:50,color:'#2196F3'},
-  {label:'&#x1FA99; 100',coins:100,color:'#f7c948'},
-  {label:'&#x1FA99; 15',coins:15,color:'#9c27b0'},
-  {label:'&#x1FA99; 200',coins:200,color:'#e91e63'},
-  {label:'&#x1FA99; 30',coins:30,color:'#00bcd4'},
-  {label:'&#x1FA99; 75',coins:75,color:'#ff9800'}
-];
-
-function renderWheel(){
-  var wheel = document.getElementById('spinWheel');
-  wheel.innerHTML = '';
-  var segAngle = 360 / SPIN_REWARDS.length;
-  SPIN_REWARDS.forEach(function(reward, i){
-    var seg = document.createElement('div');
-    seg.className = 'spin-segment';
-    seg.style.transform = 'rotate(' + (i * segAngle) + 'deg)';
-    seg.style.color = reward.color;
-    seg.textContent = reward.label;
-    wheel.appendChild(seg);
-  });
-  // Draw segments on canvas-like background
-  wheel.style.background = 'conic-gradient(' + SPIN_REWARDS.map(function(r,i){
-    var start = (i/SPIN_REWARDS.length*100);
-    var end = ((i+1)/SPIN_REWARDS.length*100);
-    return r.color + '22 ' + start + '% ' + end + '%';
-  }).join(',') + ')';
-}
-
-function doSpin(){
-  var today = new Date().toDateString();
-  if(save.dailySpinDate === today) return;
-
-  var btn = document.getElementById('spinBtn');
-  btn.disabled = true;
-  btn.style.opacity = '0.5';
-
-  // Random result
-  var resultIdx = Math.floor(Math.random() * SPIN_REWARDS.length);
-  var reward = SPIN_REWARDS[resultIdx];
-  var segAngle = 360 / SPIN_REWARDS.length;
-  var targetAngle = 360 * 5 + (360 - resultIdx * segAngle - segAngle/2); // 5 full spins + land on segment
-
-  var wheel = document.getElementById('spinWheel');
-  wheel.style.transition = 'transform 3s cubic-bezier(0.17,0.67,0.12,0.99)';
-  wheel.style.transform = 'rotate(' + targetAngle + 'deg)';
-
-  // Tick sounds during spin
-  var tickInterval = setInterval(function(){sndSpin()}, 100);
-  setTimeout(function(){clearInterval(tickInterval)}, 2800);
-
-  setTimeout(function(){
-    coins += reward.coins;
-    save.dailySpinDate = today;
-    saveSave();
-    sndWin();
-    spawnConfetti(W/2, H/2, 40);
-    document.getElementById('spinResult').textContent = 'You won ' + reward.coins + ' coins!';
-    document.getElementById('spinResult').style.display = 'block';
-    document.getElementById('spinStatus').textContent = 'Come back tomorrow!';
-  }, 3200);
-}
-
-// ===== PARALLAX BACKGROUND =====
-let bgParticles = [];
-function initBgParticles(){
-  bgParticles = [];
-  for(var i = 0; i < 50; i++){
-    bgParticles.push({
-      x: Math.random() * W,
-      y: Math.random() * H,
-      r: Math.random() * 2 + 0.5,
-      speed: Math.random() * 0.3 + 0.1,
-      opacity: Math.random() * 0.3 + 0.1,
-      drift: Math.random() * 0.5 - 0.25
-    });
-  }
-}
-initBgParticles();
-
-function drawBackground(){
-  var room = ROOMS[currentRoom] || ROOMS[0];
-  // Gradient background
-  var grad = ctx.createLinearGradient(0, 0, 0, H);
-  grad.addColorStop(0, room.bg1);
-  grad.addColorStop(1, room.bg2);
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, W, H);
-
-  // Grid
-  ctx.strokeStyle = room.grid;
-  ctx.lineWidth = 1;
-  var gridSize = 40;
-  for(var x = 0; x < W; x += gridSize){
-    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
-  }
-  for(var y = 0; y < H; y += gridSize){
-    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
-  }
-
-  // Floating particles (parallax)
-  bgParticles.forEach(function(p){
-    p.y -= p.speed;
-    p.x += p.drift;
-    if(p.y < -5) {p.y = H + 5; p.x = Math.random() * W;}
-    if(p.x < -5) p.x = W + 5;
-    if(p.x > W + 5) p.x = -5;
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
-    ctx.fillStyle = room.accent.replace(')', ',' + p.opacity + ')').replace('rgb', 'rgba');
-    // Fallback for hex colors
-    ctx.globalAlpha = p.opacity;
-    ctx.fillStyle = room.accent;
-    ctx.fill();
-    ctx.globalAlpha = 1;
-  });
-}
-
-// ===== DRAW =====
 function draw(){
   ctx.save();
-
-  // Screen shake
-  if(screenShake > 0.5){
-    var sx = (Math.random() - 0.5) * screenShake * 2;
-    var sy = (Math.random() - 0.5) * screenShake * 2;
-    ctx.translate(sx, sy);
-  }
-
-  drawBackground();
-
-  // Walls
-  var room = ROOMS[currentRoom] || ROOMS[0];
-  walls.forEach(function(w){
-    ctx.fillStyle = 'rgba(255,255,255,0.15)';
-    ctx.fillRect(w.x, w.y, w.w, w.h);
-    ctx.strokeStyle = room.accent;
-    ctx.lineWidth = 1;
-    ctx.strokeRect(w.x, w.y, w.w, w.h);
-  });
-
-  // Shockwaves
-  shockwaves.forEach(function(s){
-    ctx.beginPath();
-    ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
-    ctx.strokeStyle = s.color;
-    ctx.lineWidth = 2 * s.life;
-    ctx.globalAlpha = s.life * 0.6;
-    ctx.stroke();
-    ctx.globalAlpha = 1;
-  });
-
-  // Targets
-  targets.forEach(function(t){
-    if(!t.alive) return;
-    if(t.type === 'ghost' && !t.ghostVisible){
-      ctx.globalAlpha = 0.15;
-    }
-
-    var pulse = 1 + (t.pulse || 0) * 0.3;
-    ctx.save();
-    ctx.translate(t.x, t.y);
-    ctx.scale(pulse, pulse);
-
-    // Target glow
-    var glowColor = t.type === 'explosive' ? '#ff5722' :
-                    t.type === 'crystal' ? '#81d4fa' :
-                    t.type === 'hard' ? '#ff9800' :
-                    t.type === 'moving' ? '#76ff03' :
-                    t.type === 'ghost' ? '#b0bec5' :
-                    t.type === 'blackhole' ? '#9c27b0' :
-                    t.type === 'boss' ? '#ff1744' :
-                    room.accent;
-
-    // Outer glow
-    ctx.beginPath();
-    ctx.arc(0, 0, t.r + 6, 0, Math.PI*2);
-    ctx.fillStyle = glowColor;
-    ctx.globalAlpha = 0.15 + Math.sin(Date.now()*0.005)*0.05;
-    ctx.fill();
-    ctx.globalAlpha = 1;
-
-    // Main circle
-    ctx.beginPath();
-    ctx.arc(0, 0, t.r, 0, Math.PI*2);
-    var tGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, t.r);
-    tGrad.addColorStop(0, glowColor);
-    tGrad.addColorStop(1, glowColor + '88');
-    ctx.fillStyle = tGrad;
-    ctx.fill();
-    ctx.strokeStyle = glowColor;
-    ctx.lineWidth = 2;
-    ctx.stroke();
-
-    // HP bar for boss/hard
-    if(t.maxHp > 1){
-      var hpPct = t.hp / t.maxHp;
-      ctx.fillStyle = 'rgba(0,0,0,0.5)';
-      ctx.fillRect(-t.r, t.r + 4, t.r*2, 4);
-      ctx.fillStyle = hpPct > 0.5 ? '#4CAF50' : (hpPct > 0.25 ? '#ff9800' : '#ff1744');
-      ctx.fillRect(-t.r, t.r + 4, t.r*2*hpPct, 4);
-    }
-
-    // Type icon
-    ctx.fillStyle = '#fff';
-    ctx.font = (t.r * 0.8) + 'px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    var icon = t.type === 'explosive' ? E_BOMB :
-              t.type === 'crystal' ? E_GEM :
-              t.type === 'hard' ? E_SHIELD :
-              t.type === 'moving' ? E_ARROW :
-              t.type === 'ghost' ? E_GHOST :
-              t.type === 'blackhole' ? E_CYCLONE :
-              t.type === 'boss' ? E_SKULL : '';
-    if(icon) ctx.fillText(icon, 0, 0);
-
-    ctx.restore();
-    ctx.globalAlpha = 1;
-  });
-
-  // Ball trail particles
-  trailParticles.forEach(function(tp){
-    ctx.beginPath();
-    ctx.arc(tp.x, tp.y, tp.r * tp.life, 0, Math.PI*2);
-    ctx.fillStyle = tp.color;
-    ctx.globalAlpha = tp.life * 0.5;
-    ctx.fill();
-    ctx.globalAlpha = 1;
-  });
-
-  // Balls
-  balls.forEach(function(b){
-    if(!b.active) return;
-
-    // Trail
-    b.trail.forEach(function(tp, idx){
-      if(tp.life <= 0) return;
-      ctx.beginPath();
-      ctx.arc(tp.x, tp.y, b.r * tp.life * 0.6, 0, Math.PI*2);
-      ctx.fillStyle = getBallColor();
-      ctx.globalAlpha = tp.life * 0.3;
-      ctx.fill();
-      ctx.globalAlpha = 1;
-    });
-
-    // Ball glow
-    ctx.beginPath();
-    ctx.arc(b.x, b.y, b.r + 8, 0, Math.PI*2);
-    ctx.fillStyle = getBallColor();
-    ctx.globalAlpha = 0.2;
-    ctx.fill();
-    ctx.globalAlpha = 1;
-
-    // Ball
-    ctx.beginPath();
-    ctx.arc(b.x, b.y, b.r, 0, Math.PI*2);
-    var bGrad = ctx.createRadialGradient(b.x - 2, b.y - 2, 0, b.x, b.y, b.r);
-    bGrad.addColorStop(0, '#fff');
-    bGrad.addColorStop(0.4, getBallColor());
-    bGrad.addColorStop(1, getBallColor());
-    ctx.fillStyle = bGrad;
-    ctx.fill();
-  });
-
-  // Particles
-  particles.forEach(function(p){
-    ctx.save();
-    if(p.isShard){
-      ctx.translate(p.x, p.y);
-      ctx.rotate(p.rotation * Math.PI / 180);
-      ctx.fillStyle = p.color;
-      ctx.globalAlpha = p.life;
-      ctx.fillRect(-p.r, -p.r/3, p.r*2, p.r*0.6);
-    } else {
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r * p.life, 0, Math.PI*2);
-      ctx.fillStyle = p.color;
-      ctx.globalAlpha = p.life;
-      ctx.fill();
-    }
-    ctx.restore();
-    ctx.globalAlpha = 1;
-  });
-
-  // Aiming line
-  if(aiming && !shooting && gameActive){
-    var dx = aimX - launchX;
-    var dy = aimY - launchY;
-    var dist = Math.sqrt(dx*dx + dy*dy);
-    if(dist > 10){
-      ctx.setLineDash([8, 8]);
-      ctx.beginPath();
-      ctx.moveTo(launchX, launchY);
-      ctx.lineTo(launchX + dx/dist * 150, launchY + dy/dist * 150);
-      ctx.strokeStyle = getBallColor();
-      ctx.lineWidth = 2;
-      ctx.globalAlpha = 0.6;
-      ctx.stroke();
-      ctx.setLineDash([]);
-      ctx.globalAlpha = 1;
-    }
-  }
-
-  // Launch point
-  if(gameActive && !shooting){
-    ctx.beginPath();
-    ctx.arc(launchX, launchY, 12, 0, Math.PI*2);
-    ctx.fillStyle = getBallColor();
-    ctx.globalAlpha = 0.3 + Math.sin(Date.now()*0.005)*0.1;
-    ctx.fill();
-    ctx.globalAlpha = 1;
-    ctx.beginPath();
-    ctx.arc(launchX, launchY, 6, 0, Math.PI*2);
-    ctx.fillStyle = getBallColor();
-    ctx.fill();
-  }
-
+  if(screenShake>0.5){ctx.translate((Math.random()-0.5)*screenShake*2,(Math.random()-0.5)*screenShake*2);}
+  drawBg();
+  var room=ROOMS[currentRoom]||ROOMS[0];
+  walls.forEach(function(w){ctx.fillStyle='rgba(255,255,255,0.15)';ctx.fillRect(w.x,w.y,w.w,w.h);ctx.strokeStyle=room.accent;ctx.lineWidth=1;ctx.strokeRect(w.x,w.y,w.w,w.h);});
+  shockwaves.forEach(function(s){ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.strokeStyle=s.color;ctx.lineWidth=2*s.life;ctx.globalAlpha=s.life*0.6;ctx.stroke();ctx.globalAlpha=1;});
+  targets.forEach(function(t){if(!t.alive)return;if(t.type==='ghost'&&!t.ghostVisible)ctx.globalAlpha=0.15;
+    var pulse=1+(t.pulse||0)*0.3;ctx.save();ctx.translate(t.x,t.y);ctx.scale(pulse,pulse);
+    var gc=t.type==='explosive'?'#ff5722':(t.type==='crystal'?'#81d4fa':(t.type==='hard'?'#ff9800':(t.type==='moving'?'#76ff03':(t.type==='ghost'?'#b0bec5':(t.type==='blackhole'?'#9c27b0':(t.type==='boss'?'#ff1744':room.accent))))));
+    ctx.beginPath();ctx.arc(0,0,t.r+6,0,Math.PI*2);ctx.fillStyle=gc;ctx.globalAlpha=0.15+Math.sin(Date.now()*0.005)*0.05;ctx.fill();ctx.globalAlpha=1;
+    ctx.beginPath();ctx.arc(0,0,t.r,0,Math.PI*2);var tg=ctx.createRadialGradient(0,0,0,0,0,t.r);tg.addColorStop(0,gc);tg.addColorStop(1,gc+'88');ctx.fillStyle=tg;ctx.fill();ctx.strokeStyle=gc;ctx.lineWidth=2;ctx.stroke();
+    if(t.maxHp>1){var hp=t.hp/t.maxHp;ctx.fillStyle='rgba(0,0,0,0.5)';ctx.fillRect(-t.r,t.r+4,t.r*2,4);ctx.fillStyle=hp>0.5?'#4CAF50':(hp>0.25?'#ff9800':'#ff1744');ctx.fillRect(-t.r,t.r+4,t.r*2*hp,4);}
+    var icon=t.type==='explosive'?BOMB:(t.type==='crystal'?GEM:(t.type==='hard'?SHIELD:(t.type==='moving'?ARROW:(t.type==='ghost'?GHOST:(t.type==='blackhole'?CYCLONE:(t.type==='boss'?SKULL:''))))));
+    if(icon){ctx.fillStyle='#fff';ctx.font=(t.r*0.8)+'px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(icon,0,0);}
+    ctx.restore();ctx.globalAlpha=1;});
+  trailParticles.forEach(function(tp){ctx.beginPath();ctx.arc(tp.x,tp.y,tp.r*tp.life,0,Math.PI*2);ctx.fillStyle=tp.color;ctx.globalAlpha=tp.life*0.5;ctx.fill();ctx.globalAlpha=1;});
+  balls.forEach(function(b){if(!b.active)return;
+    b.trail.forEach(function(tp){if(tp.life<=0)return;ctx.beginPath();ctx.arc(tp.x,tp.y,b.r*tp.life*0.6,0,Math.PI*2);ctx.fillStyle=getBallColor();ctx.globalAlpha=tp.life*0.3;ctx.fill();ctx.globalAlpha=1;});
+    ctx.beginPath();ctx.arc(b.x,b.y,b.r+8,0,Math.PI*2);ctx.fillStyle=getBallColor();ctx.globalAlpha=0.2;ctx.fill();ctx.globalAlpha=1;
+    ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,Math.PI*2);var bg=ctx.createRadialGradient(b.x-2,b.y-2,0,b.x,b.y,b.r);bg.addColorStop(0,'#fff');bg.addColorStop(0.4,getBallColor());bg.addColorStop(1,getBallColor());ctx.fillStyle=bg;ctx.fill();});
+  particles.forEach(function(p){ctx.save();if(p.isShard){ctx.translate(p.x,p.y);ctx.rotate(p.rotation*Math.PI/180);ctx.fillStyle=p.color;ctx.globalAlpha=p.life;ctx.fillRect(-p.r,-p.r/3,p.r*2,p.r*0.6);}else{ctx.beginPath();ctx.arc(p.x,p.y,p.r*p.life,0,Math.PI*2);ctx.fillStyle=p.color;ctx.globalAlpha=p.life;ctx.fill();}ctx.restore();ctx.globalAlpha=1;});
+  if(aiming&&!shooting&&gameActive){var dx=aimX-launchX,dy=aimY-launchY,dist=Math.sqrt(dx*dx+dy*dy);
+    if(dist>10){ctx.setLineDash([8,8]);ctx.beginPath();ctx.moveTo(launchX,launchY);ctx.lineTo(launchX+dx/dist*150,launchY+dy/dist*150);ctx.strokeStyle=getBallColor();ctx.lineWidth=2;ctx.globalAlpha=0.6;ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;}}
+  if(gameActive&&!shooting){ctx.beginPath();ctx.arc(launchX,launchY,12,0,Math.PI*2);ctx.fillStyle=getBallColor();ctx.globalAlpha=0.3+Math.sin(Date.now()*0.005)*0.1;ctx.fill();ctx.globalAlpha=1;
+    ctx.beginPath();ctx.arc(launchX,launchY,6,0,Math.PI*2);ctx.fillStyle=getBallColor();ctx.fill();}
   ctx.restore();
-
-  // Draw confetti on confetti canvas
-  cctx.clearRect(0, 0, W, H);
-  confetti.forEach(function(c){
-    cctx.save();
-    cctx.translate(c.x, c.y);
-    cctx.rotate(c.rotation * Math.PI / 180);
-    cctx.fillStyle = c.color;
-    cctx.globalAlpha = c.life;
-    cctx.fillRect(-c.r, -c.r/2, c.r*2, c.r);
-    cctx.restore();
-  });
-
-  // Slow-mo indicator
-  if(slowMo < 1){
-    ctx.fillStyle = 'rgba(255,107,53,0.15)';
-    ctx.fillRect(0, 0, W, H);
-    ctx.fillStyle = '#ff6b35';
-    ctx.font = 'bold 14px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.globalAlpha = 0.6;
-    ctx.fillText('⏳ SLOW MOTION', W/2, H - 25);
-    ctx.globalAlpha = 1;
-  }
+  cctx.clearRect(0,0,W,H);confetti.forEach(function(c){cctx.save();cctx.translate(c.x,c.y);cctx.rotate(c.rotation*Math.PI/180);cctx.fillStyle=c.color;cctx.globalAlpha=c.life;cctx.fillRect(-c.r,-c.r/2,c.r*2,c.r);cctx.restore();});
+  if(slowMo<1){ctx.fillStyle='rgba(255,107,53,0.15)';ctx.fillRect(0,0,W,H);ctx.fillStyle='#ff6b35';ctx.font='bold 14px sans-serif';ctx.textAlign='center';ctx.globalAlpha=0.6;ctx.fillText(TIMER+' SLOW MOTION',W/2,H-25);ctx.globalAlpha=1;}
 }
-
-// ===== GAME LOOP =====
-function gameLoop(){
-  if(gameActive) update();
-  draw();
-  requestAnimationFrame(gameLoop);
-}
-
-// ===== INIT =====
+function gameLoop(){if(gameActive)update();draw();requestAnimationFrame(gameLoop);}
 initFromSave();
-if(!tutorialDone){
-  startTutorial();
-} else {
-  showMenu();
-}
+if(!save.tutorialDone)startTutorial();else showMenu();
 gameLoop();
-</script>
-</body>
-</html>
+<\/script></body></html>
