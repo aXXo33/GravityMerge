@@ -230,7 +230,42 @@ canvas{display:block}
 <div class="fomo" id="fomo"></div>
 
 <script>
-// ===== v5.0 MEGA BUILD: 10/10 RICOCHET LAB =====
+// ===== v5.1 MEGA BUILD: 10/10 RICOCHET LAB =====
+
+// Emoji constants (safe for JS strings)
+var E_COIN = String.fromCodePoint(0x1FA99);
+var E_FIRE = String.fromCodePoint(0x1F525);
+var E_STAR = String.fromCodePoint(0x2B50);
+var E_STAR_EMPTY = '\u2606';
+var E_PARTY = String.fromCodePoint(0x1F389);
+var E_BOOM = String.fromCodePoint(0x1F4A5);
+var E_LOCK = String.fromCodePoint(0x1F512);
+var E_UNLOCK = String.fromCodePoint(0x1F513);
+var E_SPARKLE = String.fromCodePoint(0x1F31F);
+var E_DOT = '\u25CF';
+var E_DOTOPEN = '\u25CB';
+var E_CRY = String.fromCodePoint(0x1F629);
+var E_ANGRY = String.fromCodePoint(0x1F624);
+var E_SAD = String.fromCodePoint(0x1F614);
+var E_RAGE = String.fromCodePoint(0x1F4A2);
+var E_CHECK = '\u2705';
+var E_TIMER = '\u23F3';
+var E_GLOBE = String.fromCodePoint(0x1F310);
+var E_BOMB = String.fromCodePoint(0x1F4A3);
+var E_GEM = String.fromCodePoint(0x1F48E);
+var E_SHIELD = String.fromCodePoint(0x1F6E1);
+var E_ARROW = '\u27A1';
+var E_GHOST = String.fromCodePoint(0x1F47B);
+var E_CYCLONE = String.fromCodePoint(0x1F300);
+var E_SKULL = String.fromCodePoint(0x1F480);
+var E_GOLD1 = String.fromCodePoint(0x1F947);
+var E_SILVER = String.fromCodePoint(0x1F948);
+var E_BRONZE = String.fromCodePoint(0x1F949);
+var E_TARGET = String.fromCodePoint(0x1F3AF);
+var E_ROCKET = String.fromCodePoint(0x1F680);
+var E_SCOPE = String.fromCodePoint(0x1F52C);
+var E_SLOT = String.fromCodePoint(0x1F3B0);
+
 const C = document.getElementById('gameCanvas');
 const ctx = C.getContext('2d');
 const CC = document.getElementById('confettiCanvas');
@@ -432,24 +467,24 @@ function showMenu(){
 }
 
 function updateMenuInfo(){
-  document.getElementById('menuCoins').textContent = '🪙 ' + coins;
+  document.getElementById('menuCoins').innerHTML = '&#x1FA99; ' + coins;
   var si = document.getElementById('streakInfo');
-  if(save.streak > 0) si.textContent = '🔥 ' + save.streak + ' day streak!';
+  if(save.streak > 0) si.innerHTML = '&#x1F525; ' + save.streak + ' day streak!';
   else si.textContent = '';
   var di = document.getElementById('dailyInfo');
   var today = new Date().toDateString();
   if(save.dailySpinDate === today) di.textContent = '✅ Daily spin used';
-  else di.textContent = '🎰 Free daily spin available!';
+  else di.innerHTML = '&#x1F3B0; Free daily spin available!';
 }
 
 function updateFOMO(){
   var base = 2000 + Math.floor(Math.random()*3000);
   var el = document.getElementById('fomo');
-  el.textContent = '🌐 ' + base.toLocaleString() + ' playing now';
+  el.innerHTML = '&#x1F310; ' + base.toLocaleString() + ' playing now';
   setInterval(function(){
     base += Math.floor(Math.random()*20)-8;
     if(base < 1500) base = 1500;
-    el.textContent = '🌐 ' + base.toLocaleString() + ' playing now';
+    el.innerHTML = '&#x1F310; ' + base.toLocaleString() + ' playing now';
   }, 3000);
 }
 
@@ -467,11 +502,11 @@ function checkStreak(){
 
 // ===== TUTORIAL =====
 const TUTORIAL_STEPS = [
-  {icon:'🎯',title:'Welcome!',text:'Shoot the ball to destroy all targets. Aim by dragging!'},
-  {icon:'💥',title:'Chain Reactions',text:'Hit explosive targets to create chain reactions. More hits = more points!'},
+  {icon:'&#x1F3AF;',title:'Welcome!',text:'Shoot the ball to destroy all targets. Aim by dragging!'},
+  {icon:'&#x1F4A5;',title:'Chain Reactions',text:'Hit explosive targets to create chain reactions. More hits = more points!'},
   {icon:'⭐',title:'Stars & Coins',text:'Save shots for more stars. Stars and combos earn coins for the shop!'},
   {icon:'\ud83c\udfc6',title:'Boss Rooms',text:'Every 5th level is a Boss Room. Defeat the boss with just 1 shot!'},
-  {icon:'🚀',title:'Ready?',text:'Let\'s go! Tap to aim, release to shoot!'}
+  {icon:'&#x1F680;',title:'Ready?',text:'Let\'s go! Tap to aim, release to shoot!'}
 ];
 
 function startTutorial(){
@@ -505,7 +540,7 @@ function nextTutorial(){
 // ===== WORLD MAP =====
 function startWorldMap(){
   showScreen('worldMapS');
-  document.getElementById('mapCoins').textContent = '🪙 ' + coins;
+  document.getElementById('mapCoins').innerHTML = '&#x1FA99; ' + coins;
   var grid = document.getElementById('roomGrid');
   grid.innerHTML = '';
   ROOMS.forEach(function(room, ri){
@@ -520,9 +555,9 @@ function startWorldMap(){
     var progressColor = room.accent;
     card.innerHTML = '<div class="room-icon">' + room.icon + '</div>' +
       '<div class="room-name">' + room.name + '</div>' +
-      '<div class="room-stars">' + (isLocked ? '🔒' : '⭐ ' + stars + '/' + maxStars) + '</div>' +
+      '<div class="room-stars">' + (isLocked ? '&#x1F512;' : '⭐ ' + stars + '/' + maxStars) + '</div>' +
       '<div class="room-info">' + (isLocked ? 'LOCKED' : completedLevels + '/' + rp.levels.length + ' levels') + '</div>' +
-      (isLocked ? '<div class="lock-icon">🔒</div>' : '') +
+      (isLocked ? '<div class="lock-icon">&#x1F512;</div>' : '') +
       '<div class="room-progress"><div class="room-progress-fill" style="width:' + progressPct + '%;background:' + progressColor + '"></div></div>' +
       (rp.levels[4] === 0 && !isLocked ? '<div style="color:#ff1744;font-size:0.6em;margin-top:3px">BOSS LVL</div>' : '');
     if(!isLocked){
@@ -556,7 +591,7 @@ function openRoomIntro(ri){
       else dot.classList.add('locked');
     }
     if(isBoss) dot.classList.add('boss');
-    dot.textContent = isBoss ? '💀' : (i + 1);
+    dot.innerHTML = isBoss ? '&#x1F480;' : (i + 1);
     dot.style.borderColor = isBoss ? '#ff1744' : room.accent;
     if(!dot.classList.contains('locked')){
       (function(li){
@@ -808,7 +843,7 @@ function showScoreFly(x, y, amount){
 function showCoinFly(x, y, amount){
   var el = document.createElement('div');
   el.className = 'score-fly';
-  el.textContent = '🪙 +' + amount;
+  el.innerHTML = '&#x1FA99; +' + amount;
   el.style.left = x + 'px';
   el.style.top = y + 'px';
   el.style.color = '#f7c948';
@@ -1069,7 +1104,7 @@ function updateHUD(){
   document.getElementById('hudLevel').textContent = level;
   document.getElementById('hudShots').textContent = shotsLeft;
   document.getElementById('hudScore').textContent = score;
-  document.getElementById('hudCoins').textContent = '🪙 ' + coins;
+  document.getElementById('hudCoins').innerHTML = '&#x1FA99; ' + coins;
   var dots = '';
   targets.forEach(function(t){
     dots += t.alive ? '●' : '○';
@@ -1133,12 +1168,12 @@ function levelComplete(){
   var lcCoins = document.getElementById('lcCoins');
   var lcPerfect = document.getElementById('lcPerfect');
 
-  lcEmoji.textContent = isPerfect ? '💥' : '🎉';
+  lcEmoji.innerHTML = isPerfect ? '&#x1F4A5;' : '&#x1F389;';
   lcTitle.textContent = isPerfect ? 'PERFECT SHOT!' : 'LEVEL COMPLETE!';
   lcTitle.style.color = isPerfect ? '#ff6b35' : '#4CAF50';
   lcStars.textContent = '⭐'.repeat(starsEarned) + '☆'.repeat(3 - starsEarned);
   lcScore.textContent = '+' + score;
-  lcCoins.textContent = '🪙 +' + coinBonus;
+  lcCoins.innerHTML = '&#x1FA99; +' + coinBonus;
   lcPerfect.style.display = isPerfect ? 'block' : 'none';
 
   showScreen('levelCompleteS');
@@ -1148,8 +1183,8 @@ function showBossClear(coinBonus){
   var room = ROOMS[currentRoom];
   var nextRoom = currentRoom < ROOMS.length - 1 ? ROOMS[currentRoom + 1] : null;
   document.getElementById('bcRoom').textContent = room.name + ' CLEARED!';
-  document.getElementById('bcUnlock').textContent = nextRoom ? '🔓 ' + nextRoom.name + ' Unlocked!' : '🌟 All Rooms Complete!';
-  document.getElementById('bcCoins').textContent = '🪙 +' + (coinBonus + 50);
+  document.getElementById('bcUnlock').innerHTML = nextRoom ? '&#x1F513; ' + nextRoom.name + ' Unlocked!' : '&#x1F31F; All Rooms Complete!';
+  document.getElementById('bcCoins').innerHTML = '&#x1FA99; +' + (coinBonus + 50);
   coins += 50;
   saveSave();
   sndWin();
@@ -1183,20 +1218,20 @@ function gameOver(){
   var goTargetLeft = document.getElementById('goTargetLeft');
 
   if(leftCount === 1){
-    goEmoji.textContent = '😩';
+    goEmoji.innerHTML = '&#x1F629;';
     goTitle.textContent = 'SO CLOSE!';
     goSubtitle.textContent = 'Just ONE target left!';
-    goTargetLeft.textContent = '💢 Almost had it!';
+    goTargetLeft.innerHTML = '&#x1F4A2; Almost had it!';
     triggerSlowMo(800);
     // Pulse the remaining target
     targets.forEach(function(t){if(t.alive) t.pulse = 2;});
   } else if(leftCount <= 2){
-    goEmoji.textContent = '😤';
+    goEmoji.innerHTML = '&#x1F624;';
     goTitle.textContent = 'ALMOST!';
     goSubtitle.textContent = leftCount + ' targets remaining';
     goTargetLeft.textContent = 'So close yet so far...';
   } else {
-    goEmoji.textContent = '😔';
+    goEmoji.innerHTML = '&#x1F614;';
     goTitle.textContent = 'TRY AGAIN';
     goSubtitle.textContent = leftCount + '/' + total + ' targets left';
     goTargetLeft.textContent = 'You can do this!';
@@ -1217,7 +1252,7 @@ function showReplay(){
 
 // ===== SHARE =====
 function shareScore(){
-  var text = 'I scored ' + score + ' on Level ' + level + ' in Ricochet Lab! Can you beat me? 🔬🎯';
+  var text = 'I scored ' + score + ' on Level ' + level + ' in Ricochet Lab! Can you beat me? &#x1F52C;&#x1F3AF;';
   if(navigator.share){
     navigator.share({title:'Ricochet Lab',text:text,url:window.location.href}).catch(function(){});
   } else {
@@ -1232,7 +1267,7 @@ function shareScore(){
 // ===== SHOP =====
 function openShop(){
   showScreen('shopS');
-  document.getElementById('shopCoins').textContent = '🪙 ' + coins;
+  document.getElementById('shopCoins').innerHTML = '&#x1FA99; ' + coins;
   shopTab('skins');
 }
 
@@ -1264,12 +1299,12 @@ function shopTab(tab){
       var tColor = item.color === 'rainbow' ? '#fff' : (item.color === 'transparent' ? '#555' : item.color);
       preview = '<div style="font-size:1.8em;margin-bottom:4px;color:' + tColor + '">\u2728</div>';
     } else {
-      preview = '<div style="font-size:1.8em;margin-bottom:4px">💥</div>';
+      preview = '<div style="font-size:1.8em;margin-bottom:4px">&#x1F4A5;</div>';
     }
 
     div.innerHTML = preview +
       '<div class="skin-name">' + item.name + '</div>' +
-      '<div class="skin-price">' + (isEquipped ? '✅ EQUIPPED' : (owned ? 'TAP TO EQUIP' : '🪙 ' + item.price)) + '</div>';
+      '<div class="skin-price">' + (isEquipped ? '✅ EQUIPPED' : (owned ? 'TAP TO EQUIP' : '&#x1FA99; ' + item.price)) + '</div>';
 
     div.onclick = function(){
       if(isEquipped) return;
@@ -1290,7 +1325,7 @@ function shopTab(tab){
         sndCoin();
         saveSave();
         shopTab(tab);
-        document.getElementById('shopCoins').textContent = '🪙 ' + coins;
+        document.getElementById('shopCoins').innerHTML = '&#x1FA99; ' + coins;
       }
     };
     grid.appendChild(div);
@@ -1312,7 +1347,7 @@ function renderAchievements(){
     var unlocked = save.achievements.indexOf(a.id) !== -1;
     var div = document.createElement('div');
     div.className = 'achievement' + (unlocked ? ' unlocked' : '');
-    div.innerHTML = '<div class="ach-icon">' + (unlocked ? a.icon : '🔒') + '</div>' +
+    div.innerHTML = '<div class="ach-icon">' + (unlocked ? a.icon : '&#x1F512;') + '</div>' +
       '<div class="ach-info"><div class="ach-name">' + a.name + '</div><div class="ach-desc">' + a.desc + '</div></div>' +
       '<div class="ach-status">' + (unlocked ? '✅' : '') + '</div>';
     list.appendChild(div);
@@ -1364,7 +1399,7 @@ function openLeaderboard(){
   lb.forEach(function(entry, idx){
     var row = document.createElement('div');
     row.className = 'lb-row' + (entry.isMe ? ' me' : '');
-    var rankText = (idx === 0) ? '🥇' : (idx === 1 ? '🥈' : (idx === 2 ? '🥉' : (idx + 1)));
+    var rankText = (idx === 0) ? '&#x1F947;' : (idx === 1 ? '&#x1F948;' : (idx === 2 ? '&#x1F949;' : (idx + 1)));
     row.innerHTML = '<div class="lb-rank">' + rankText + '</div><div class="lb-name">' + entry.name + '</div><div class="lb-score">' + entry.score.toLocaleString() + '</div>';
     list.appendChild(row);
   });
@@ -1387,14 +1422,14 @@ function openDailyReward(){
 function closeDailySpin(){showMenu()}
 
 const SPIN_REWARDS = [
-  {label:'🪙 10',coins:10,color:'#ff6b35'},
-  {label:'🪙 25',coins:25,color:'#4CAF50'},
-  {label:'🪙 50',coins:50,color:'#2196F3'},
-  {label:'🪙 100',coins:100,color:'#f7c948'},
-  {label:'🪙 15',coins:15,color:'#9c27b0'},
-  {label:'🪙 200',coins:200,color:'#e91e63'},
-  {label:'🪙 30',coins:30,color:'#00bcd4'},
-  {label:'🪙 75',coins:75,color:'#ff9800'}
+  {label:'&#x1FA99; 10',coins:10,color:'#ff6b35'},
+  {label:'&#x1FA99; 25',coins:25,color:'#4CAF50'},
+  {label:'&#x1FA99; 50',coins:50,color:'#2196F3'},
+  {label:'&#x1FA99; 100',coins:100,color:'#f7c948'},
+  {label:'&#x1FA99; 15',coins:15,color:'#9c27b0'},
+  {label:'&#x1FA99; 200',coins:200,color:'#e91e63'},
+  {label:'&#x1FA99; 30',coins:30,color:'#00bcd4'},
+  {label:'&#x1FA99; 75',coins:75,color:'#ff9800'}
 ];
 
 function renderWheel(){
@@ -1596,13 +1631,13 @@ function draw(){
     ctx.font = (t.r * 0.8) + 'px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    var icon = t.type === 'explosive' ? '💣' :
-              t.type === 'crystal' ? '💎' :
-              t.type === 'hard' ? '🛡' :
-              t.type === 'moving' ? '➡' :
-              t.type === 'ghost' ? '👻' :
-              t.type === 'blackhole' ? '🌀' :
-              t.type === 'boss' ? '💀' : '';
+    var icon = t.type === 'explosive' ? E_BOMB :
+              t.type === 'crystal' ? E_GEM :
+              t.type === 'hard' ? E_SHIELD :
+              t.type === 'moving' ? E_ARROW :
+              t.type === 'ghost' ? E_GHOST :
+              t.type === 'blackhole' ? E_CYCLONE :
+              t.type === 'boss' ? E_SKULL : '';
     if(icon) ctx.fillText(icon, 0, 0);
 
     ctx.restore();
